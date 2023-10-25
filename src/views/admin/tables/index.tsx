@@ -9,6 +9,7 @@ import ComplexTable from "./components/ComplexTable";
 
 const Tables = () => {
   return (
+    
     <ColumnsTable tableData={tableDataColumns} />
   );
 };

@@ -33,7 +33,7 @@ export default function Admin(props: { [x: string]: any }) {
     }
     return activeRoute;
   };
-  const getActiveNavbar = (routes: RoutesType[]): string | boolean => {
+  const getActiveNavbar = (routes: RoutesType[]): string | boolean => { 
     let activeNavbar = false;
     for (let i = 0; i < routes.length; i++) {
       if (
@@ -77,9 +77,12 @@ export default function Admin(props: { [x: string]: any }) {
             <div className="pt-5s mx-auto mb-auto h-full min-h-[84vh] p-2 md:pr-2">
               <Routes>
                 {getRoutes(routes)}
-
                 <Route
                   path="/"
+                  element={<Navigate to="/admin/default" replace />}
+                />
+                    <Route
+                  path="admin/"
                   element={<Navigate to="/admin/default" replace />}
                 />
               </Routes>

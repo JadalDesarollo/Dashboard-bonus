@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CardMenu from "components/card/CardMenu";
 import Card from "components/card";
 
@@ -13,23 +13,37 @@ import {
   getPaginationRowModel,
 } from "@tanstack/react-table";
 import InputField from "components/fields/InputField";
+import { useTransactionContext } from "context/TransactionContext";
 
-type RowObj = {
-  name: [string, boolean];
-  progress: string;
-  quantity: number;
-  date: string;
-};
-
+interface ClientsData {
+  id: number,
+  nombres: string;
+  tarjeta_loyalty: string;
+  documento: string
+  transacciones: string;
+}
 function ColumnsTable(props: { tableData: any }) {
-  const { tableData } = props;
+  const { fetchClients } = useTransactionContext()
+  const [isLoading, setisLoading] = useState<boolean>(false)
+
+  const [data, setData] = useState<ClientsData[]>([])
+
+  const getClients = async () => {
+    setisLoading(true)
+    const { data } = await fetchClients()
+    setisLoading(false)
+    setData(data ?? [])
+  }
+  useEffect(() => {
+    getClients()
+  }, [])
+  
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  let defaultData = tableData;
   const columns = [
-    columnHelper.accessor("name", {
+    columnHelper.accessor("id", {
       id: "name",
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">NAME</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">ID</p>
       ),
       cell: (info: any) => (
         <p className="text-sm font-light text-navy-700 dark:text-white">
@@ -37,11 +51,11 @@ function ColumnsTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("progress", {
+    columnHelper.accessor("nombres", {
       id: "progress",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          PROGRESS
+          NOMBRES
         </p>
       ),
       cell: (info) => (
@@ -50,11 +64,11 @@ function ColumnsTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("quantity", {
+    columnHelper.accessor("documento", {
       id: "quantity",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          QUANTITY
+          DOCUMENTO
         </p>
       ),
       cell: (info) => (
@@ -63,10 +77,10 @@ function ColumnsTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("date", {
+    columnHelper.accessor("tarjeta_loyalty", {
       id: "date",
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">DATE</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">TARJETA LOYALTY</p>
       ),
       cell: (info) => (
         <p className="text-sm font-light text-navy-700 dark:text-white">
@@ -74,23 +88,35 @@ function ColumnsTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("date", {
-      id: "date",
+    columnHelper.accessor("transacciones", {
+      id: "transacciones",
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">Transaccion</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">Transacciones</p>
       ),
       cell: (info) => (
-        <button className="bg-brand-500 text-white px-8 py-1 rounded-md">
-          ver
-        </button>
+        <>
+
+          <button className="bg-brand-500 text-white px-8 py-1 rounded-md mr-2">
+            ver
+          </button>
+
+          <button className="bg-red-400 text-white px-8 py-1 rounded-md">
+            ...
+          </button>
+        </>
       ),
     }),
+
   ];
-  const [data, setData] = React.useState(() => [...defaultData]);
+
+
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
   });
+  const [nameFilter, setNameFilter] = React.useState<string>("");
+  const [documentFilter, setDocumentFilter] = React.useState<string>("");
+  const [isFormValid, setIsFormValid] = React.useState<boolean>(false);
   const table = useReactTable({
     data,
     columns,
@@ -105,19 +131,44 @@ function ColumnsTable(props: { tableData: any }) {
     getPaginationRowModel: getPaginationRowModel(),
     debugTable: true,
   });
-
   return (
     <Card extra={"w-full pb-10 p-4 h-full mt-6"}>
+      <div className="flex gap-4 ">
+        <InputField id="filter-search" type="search" label="Nombres" placeholder="Ingrese nombres" variant="none" extra="basis-80"
+          onChange={(e) => {
+            setNameFilter(e.target.value);
+            setIsFormValid(Boolean(e.target.value) || Boolean(documentFilter))
+          }}
+        />
+        <InputField id="filter-search" type="search" label="Nro Documento" placeholder="Buscar" variant="none" extra="basis-80"
+          onChange={(e) => {
+            setDocumentFilter(e.target.value);
+          }}
+        />
+        <button
+          onClick={() => {
+            if (nameFilter.trim() === "" && documentFilter.trim() === "") {
+              getClients()
+              return
+            }
+            const filteredData = data.filter((row: ClientsData) => {
+              const nameMatch = nameFilter !== "" && row.nombres?.toLocaleLowerCase().includes(nameFilter.toLocaleLowerCase());
+              const documentMatch = documentFilter !== "" && row.documento?.toLocaleLowerCase().includes(documentFilter.toLocaleLowerCase());
+              return nameMatch || documentMatch;
+            });
+            console.log(filteredData);
+            setData(filteredData);
+          }}
+          className={`text-white px-8 py-1 rounded-md h-12 self-end first-letter
+          bg-brand-500
+              `}
+        >
 
-      <InputField id="filter-search" type="search" label="Nro Documento" placeholder="Buscar" variant="none" extra=""
-        onChange={(e) => {
-          console.log(e)
-        }}
-      />
-      <InputField id="filter-search" type="search" label="Nro Documento" placeholder="Buscar" variant="none" extra="" />
-
+          Buscar
+        </button>
+      </div>
       <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
-        <table className="w-full">
+        <table className="w-full ">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="!border-px !border-gray-400">
@@ -129,7 +180,7 @@ function ColumnsTable(props: { tableData: any }) {
                       onClick={header.column.getToggleSortingHandler()}
                       className="cursor-pointer border-b-[1px] border-gray-200 pt-4 pb-2 pr-4 text-start"
                     >
-                      <div className="items-center justify-between text-xs text-gray-200">
+                      <div className="items-center justify-center  text-xs text-gray-200">
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
@@ -156,7 +207,7 @@ function ColumnsTable(props: { tableData: any }) {
                       return (
                         <td
                           key={cell.id}
-                          className="min-w-[150px] border-white/0 py-3  pr-4"
+                          className=" border-white/0 py-2 pr-4"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
@@ -169,24 +220,25 @@ function ColumnsTable(props: { tableData: any }) {
 
                 );
               })}
-            x
+
           </tbody>
         </table>
         {/* Paginación */}
-        <div className="">
-          <button
+        <div className=" outline outline-1 outline-gray-200 flex gap-5 justify-start items-center pt-4">
+          {/*     <button
             onClick={() => {
               table.setPageIndex(0);
             }}
             disabled={!table.getCanPreviousPage()}
           >
             {"<<"}
-          </button>{" "}
+          </button>{" "} */}
           <button
             onClick={() => {
               table.previousPage();
             }}
             disabled={!table.getCanPreviousPage()}
+            className="cursor-pointer"
           >
             {"<"}
           </button>{" "}
@@ -195,26 +247,27 @@ function ColumnsTable(props: { tableData: any }) {
               table.nextPage();
             }}
             disabled={!table.getCanNextPage()}
+            className="cursor-pointer"
           >
             {">"}
           </button>{" "}
-          <button
+          {/*           <button
             onClick={() => {
               table.setPageIndex(table.getPageCount() - 1); // Ir a la última página
             }}
             disabled={!table.getCanNextPage()}
           >
             {">>"}
-          </button>{" "}
+          </button>{" "} */}
           <span>
-            Page{" "}
+            Página{" "}
             <strong>
-              {table.getState().pagination.pageIndex + 1} of{" "}
+              {table.getState().pagination.pageIndex + 1} de{" "}
               {table.getPageCount()}
             </strong>{" "}
           </span>
           <span className="flex items-center gap-3">
-            Go to page:
+            Ir a:
             <input
               type="number"
               defaultValue={table.getState().pagination.pageIndex + 1}
@@ -236,7 +289,7 @@ function ColumnsTable(props: { tableData: any }) {
               <option
                 className="appearance-none"
                 key={pageSize} value={pageSize}>
-                Show {pageSize}
+                Mostrar {pageSize}
               </option>
             ))}
           </select>
@@ -247,4 +300,4 @@ function ColumnsTable(props: { tableData: any }) {
 }
 
 export default ColumnsTable;
-const columnHelper = createColumnHelper<RowObj>();
+const columnHelper = createColumnHelper<ClientsData>();
