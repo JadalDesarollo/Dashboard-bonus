@@ -21,6 +21,7 @@
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "apexcharts": "^3.35.5",
+    "date-fns": "^2.30.0",
     "framer-motion": "^7.10.2",
     "material-react-table": "^1.15.1",
     "react": "^18.2.0",

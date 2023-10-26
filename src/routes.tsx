@@ -15,22 +15,31 @@ import {
   MdPerson,
   MdLock,
 } from "react-icons/md";
+import TransactionClient from "views/admin/tables/components/TransactionCliente";
+import TransactionPending from "views/admin/tables/components/TransactionPending";
 
 const routes = [
-  {
-    name: "Main Dashboard",
-    layout: "/admin",
-    path: "default",
-    icon: <MdHome className="h-6 w-6" />,
-    component: <MainDashboard />,
-  },
   {
     name: "Clientes",
     layout: "/admin",
     icon: <MdBarChart className="h-6 w-6" />,
-    path: "data-tables",
+    path: "clientes",
     component: <DataTables />,
   },
+  {
+    name: "Movimientos",
+    icon: <MdBarChart className="h-6 w-6" />,
+    layout: "/admin",
+    path: "clientes/:id",
+    component: <TransactionClient />,
+  },
+  {
+    name: "Pendientes",
+    icon: <MdBarChart className="h-6 w-6" />,
+    layout: "/admin",
+    path: "clientes/pendientes/:id",
+    component: <TransactionPending />,
+  }
 ]
 
 export default routes;

@@ -14,6 +14,8 @@ import {
 } from "@tanstack/react-table";
 import InputField from "components/fields/InputField";
 import { useTransactionContext } from "context/TransactionContext";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface ClientsData {
   id: number,
@@ -27,7 +29,7 @@ function ColumnsTable(props: { tableData: any }) {
   const [isLoading, setisLoading] = useState<boolean>(false)
 
   const [data, setData] = useState<ClientsData[]>([])
-
+  const navigate = useNavigate()
   const getClients = async () => {
     setisLoading(true)
     const { data } = await fetchClients()
@@ -37,7 +39,7 @@ function ColumnsTable(props: { tableData: any }) {
   useEffect(() => {
     getClients()
   }, [])
-  
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const columns = [
     columnHelper.accessor("id", {
@@ -88,21 +90,30 @@ function ColumnsTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor("transacciones", {
+    columnHelper.accessor("id", {
       id: "transacciones",
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">Transacciones</p>
       ),
       cell: (info) => (
         <>
+          <Link to={`/admin/clientes/${info.getValue()}`}>
+            <button
 
-          <button className="bg-brand-500 text-white px-8 py-1 rounded-md mr-2">
-            ver
-          </button>
+              className="bg-brand-500 text-white px-8 py-1 rounded-md mr-2" >
+              ver
+            </button>
+          </Link>
 
-          <button className="bg-red-400 text-white px-8 py-1 rounded-md">
-            ...
-          </button>
+          <Link to={`/admin/clientes/pendientes/${info.getValue()}`}>
+            <button
+
+              className="bg-red-400 text-white px-8 py-1 rounded-md mr-2" >
+              ...
+            </button>
+          </Link>
+
+  
         </>
       ),
     }),

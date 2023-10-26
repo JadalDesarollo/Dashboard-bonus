@@ -17,7 +17,7 @@ const Sidebar = (props: {
       className={`sm:none duration-175 linear fixed !z-50 flex min-h-full flex-col bg-white pb-10 shadow-2xl shadow-white/5 transition-all dark:!bg-navy-800 dark:text-white md:!z-50 lg:!z-50 xl:!z-0 ${open ? "translate-x-0" : "-translate-x-96"
         } w-79`}
     >
-{/*       <span className="self-end mt-3 mx-2"
+      {/*       <span className="self-end mt-3 mx-2"
         onClick={onClose}
       >
         <FiAlignJustify className="h-8 w-8" />
@@ -38,10 +38,8 @@ const Sidebar = (props: {
       {/* Nav item */}
 
       <ul className="mb-auto pt-1">
-        <Links routes={routes} />
+        <Links routes={routes.slice(0, 1)} />
       </ul>
-
-
     </div>
   );
 };

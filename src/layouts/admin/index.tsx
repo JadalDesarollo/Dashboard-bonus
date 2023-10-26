@@ -33,7 +33,7 @@ export default function Admin(props: { [x: string]: any }) {
     }
     return activeRoute;
   };
-  const getActiveNavbar = (routes: RoutesType[]): string | boolean => { 
+  const getActiveNavbar = (routes: RoutesType[]): string | boolean => {
     let activeNavbar = false;
     for (let i = 0; i < routes.length; i++) {
       if (
@@ -47,9 +47,21 @@ export default function Admin(props: { [x: string]: any }) {
   const getRoutes = (routes: RoutesType[]): any => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
-        return (
-          <Route path={`/${prop.path}`} element={prop.component} key={key} />
-        );
+        if (prop.path === "clientes") {
+          // Ruta principal de "Clientes"
+          return (
+            <Route path={`/${prop.path}`} element={prop.component} key={key} />
+          );
+        } else if (prop.path.startsWith("clientes/")) {
+          // Subrutas de "Clientes"
+          return (
+            <Route
+              path={`/${prop.path}`}
+              element={prop.component}
+              key={key}
+            />
+          );
+        }
       } else {
         return null;
       }
@@ -79,12 +91,14 @@ export default function Admin(props: { [x: string]: any }) {
                 {getRoutes(routes)}
                 <Route
                   path="/"
-                  element={<Navigate to="/admin/default" replace />}
+                  element={<Navigate to="/admin/clientes" replace />}
                 />
-                    <Route
+                <Route
                   path="admin/"
-                  element={<Navigate to="/admin/default" replace />}
+                  element={<Navigate to="/admin/clientes" replace />}
                 />
+                  
+
               </Routes>
             </div>
             <div className="p-3">

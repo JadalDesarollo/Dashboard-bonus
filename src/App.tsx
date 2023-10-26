@@ -10,6 +10,10 @@ const App = () => {
       <Route path="admin/*" element={<AdminLayout />} />
       <Route path="rtl/*" element={<RtlLayout />} />
       <Route path="/" element={<Navigate to="/admin" replace />} />
+      <Route
+        path="*"
+        element={<Navigate to={"/admin/clientes"} />}
+      />
     </Routes>
   );
 };
