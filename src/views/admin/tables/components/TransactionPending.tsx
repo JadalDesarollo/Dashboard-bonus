@@ -35,6 +35,7 @@ export interface TransactionPending {
         productDescription: string;
         productTotalAmount: number;
     }[];
+    mensajeError: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -116,10 +117,23 @@ function TransactionPending() {
             ),
         }),
 
+
         columnHelper.accessor("totalAmount", {
             id: "totalAmount",
             header: () => (
                 <p className="text-sm font-bold text-gray-600 dark:text-white">MONTO TOTAL</p>
+            ),
+            cell: (info) => (
+                <p className="text-sm font-light text-navy-700 dark:text-white">
+                    {info.getValue()}
+                </p>
+            ),
+        }),
+
+        columnHelper.accessor("mensajeError", {
+            id: "mensajeError",
+            header: () => (
+                <p className="text-sm font-bold text-gray-600 dark:text-white">MOTIVO</p>
             ),
             cell: (info) => (
                 <p className="text-sm font-light text-navy-700 dark:text-white">

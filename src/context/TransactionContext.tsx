@@ -40,7 +40,7 @@ export const TransactionProvider: React.FC<{
     const fetchTransactionData = async () => {
         try {
             const response = await fetch(
-                "http://localhost:3001/api-bonus/listAccumulate"
+                "http://192.168.18.25::3003/api-bonus/listAccumulate"
             );
             const data = await response.json();
             setBonusData(data.data);
@@ -52,9 +52,8 @@ export const TransactionProvider: React.FC<{
     const fetchTransactionsByClient = async (idClient: number): Promise<FunctionResponse> => {
         try {
             const response = await fetch(
-                `http://localhost:3001/api-bonus/listAccumulate/${idClient}`
+                `http://192.168.18.25:3003/api-bonus/listAccumulate/${idClient}`
             );
-
             if (!response.ok) {
                 return {
                     estado: false
@@ -75,7 +74,7 @@ export const TransactionProvider: React.FC<{
     const fetchClients = async (): Promise<FunctionResponse> => {
         try {
             const response = await fetch(
-                "http://localhost:3001/api-bonus/listClients"
+                "http://192.168.18.25:3003/api-bonus/listClients"
             );
             const data = await response.json();
             console.log(data.data)
@@ -91,7 +90,7 @@ export const TransactionProvider: React.FC<{
     }
     const exchangeWithLoyalty = async (formData: any): Promise<ExchangeWithLoyaltyResponse> => {
         try {
-            const response = await fetch("http://localhost:3001/api-bonus/exchange/card", {
+            const response = await fetch("http://192.168.18.25:3003/api-bonus/exchange/card", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -121,7 +120,7 @@ export const TransactionProvider: React.FC<{
     const fetchTransactionsPending = async (idClient: number): Promise<FunctionResponse> => {
         try {
             const response = await fetch(
-                `http://localhost:3001/api-bonus/transactionPending/${idClient}`
+                `http://192.168.18.25:3003/api-bonus/transactionPending/${idClient}`
             );
             if (!response.ok) {
                 return {
