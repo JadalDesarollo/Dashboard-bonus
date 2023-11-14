@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CardMenu from "components/card/CardMenu";
 import Card from "components/card";
-
 import {
     createColumnHelper,
     flexRender,
@@ -55,7 +54,6 @@ function TransactionClient() {
         setCliente(responseTransaction?.cliente)
         setisLoading(false)
     }
-
     useEffect(() => {
         getTransactions()
     }, [])
@@ -148,8 +146,6 @@ function TransactionClient() {
 
 
     ];
-
-
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: 0,
         pageSize: 5,
@@ -172,9 +168,33 @@ function TransactionClient() {
         debugTable: true,
     });
     if (isNaN(idClient) || idClient < 0) {
-
         navigate('/admin/clientes')
         return
+    }
+    const filterData = async (e: any) => {
+        e.preventDefault();
+        let filteredData = []
+        const { data } = await fetchTransactionsByClient(idClient)
+        if (nameFilter.trim() === "" && documentFilter.trim() === "") {
+            getTransactions()
+            return
+        }
+        //si se rellenan los 2 campos iguales buscar por los 2 
+        if (nameFilter.trim() != "" && documentFilter.trim() != "") {
+            filteredData = data.filter((row: TransactionClient) => {
+                const nameMatch = nameFilter !== "" && row.numero_comprobante?.toLocaleLowerCase().includes(nameFilter.toLocaleLowerCase());
+                const documentMatch = documentFilter !== "" && row.fecha_transaccion?.toLocaleLowerCase().includes(documentFilter.toLocaleLowerCase());
+                return nameMatch && documentMatch;
+            });
+            return setData(filteredData);
+        }
+        filteredData = data.filter((row: TransactionClient) => {
+            const nameMatch = nameFilter !== "" && row.numero_comprobante?.toLocaleLowerCase().includes(nameFilter.toLocaleLowerCase());
+            const documentMatch = documentFilter !== "" && row.fecha_transaccion?.toLocaleLowerCase().includes(documentFilter.toLocaleLowerCase());
+            return nameMatch || documentMatch;
+        });
+        setData(filteredData);
+
     }
     return (
         <Card extra={"w-full pb-10 p-4 h-full mt-6 "}>
@@ -214,7 +234,7 @@ function TransactionClient() {
 
 
             <div className="mt-3 overflow-x-scroll xl:overflow-x-hidden">
-                <div className="flex gap-4 pb-3">
+                <form className="flex gap-4 pb-3" onSubmit={filterData}>
                     <InputField id="filter-search" type="search" label="Nro comprobante" placeholder="Ingrese nro comprobante" variant="none" extra="basis-80"
                         onChange={(e) => {
                             setNameFilter(e.target.value);
@@ -227,19 +247,7 @@ function TransactionClient() {
                         }}
                     />
                     <button
-                        onClick={() => {
-                            if (nameFilter.trim() === "" && documentFilter.trim() === "") {
-                                getTransactions()
-                                return
-                            }
-                            const filteredData = data.filter((row: TransactionClient) => {
-                                const nameMatch = nameFilter !== "" && row.numero_comprobante?.toLocaleLowerCase().includes(nameFilter.toLocaleLowerCase());
-                                const documentMatch = documentFilter !== "" && row.fecha_transaccion?.toLocaleLowerCase().includes(documentFilter.toLocaleLowerCase());
-                                return nameMatch || documentMatch;
-                            });
-                            console.log(filteredData);
-                            setData(filteredData);
-                        }}
+                        type="submit"
                         className={`text-white px-8 py-1 rounded-md h-12 self-end first-letter
           bg-brand-500
               `}
@@ -247,7 +255,7 @@ function TransactionClient() {
 
                         Buscar
                     </button>
-                </div>
+                </form>
                 {
                     isLoading ? <div className="text-start mb-6 mt-9 ml-80">
                         <div role="status">
@@ -260,7 +268,6 @@ function TransactionClient() {
                     </div>
                         : null
                 }
-
                 {
                     !isLoading && data.length > 0 ?
                         <>
@@ -322,14 +329,6 @@ function TransactionClient() {
                             </table>
 
                             <div className=" outline outline-1 outline-gray-200 flex gap-5 justify-start items-center pt-4">
-                                {/*     <button
-            onClick={() => {
-              table.setPageIndex(0);
-            }}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {"<<"}
-          </button>{" "} */}
                                 <button
                                     onClick={() => {
                                         table.previousPage();
@@ -367,9 +366,9 @@ function TransactionClient() {
                                     Ir a:
                                     <input
                                         type="number"
-                                        defaultValue={table.getState().pagination.pageIndex + 1}
+                                        value={Math.max(1, Math.min(table.getPageCount(), table.getState().pagination.pageIndex + 1))}
                                         onChange={(e) => {
-                                            const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                                            const page = e.target.value ? Math.max(1, Math.min(table.getPageCount(), Number(e.target.value))) - 1 : 0;
                                             table.setPageIndex(page);
                                         }}
                                         className=" p-1 rounded w-16 dark:bg-gray-800"
@@ -390,19 +389,19 @@ function TransactionClient() {
                                         </option>
                                     ))}
                                 </select>
+                                <span>
+                                    Cantidad de transacciones: <strong>{data.length}</strong>
+                                </span>
                             </div>
                         </> : null
-
                 }
                 {
-                   !isLoading && data.length <= 0 ?
+                    !isLoading && data.length <= 0 ?
                         <p className="text-sm text-red-700 dark:text-white pl-3">
                             No se encontraron movimientos registrados
                         </p> : null
                 }
             </div>
-
-
         </Card>
     );
 }

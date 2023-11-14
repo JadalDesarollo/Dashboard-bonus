@@ -23,9 +23,7 @@ interface FunctionResponse {
 }
 interface BonusContextType {
     transactionData: Transaction[] | null;
-    fetchTransactionData: () => void;
     isLoading: boolean;
-    exchangeWithLoyalty: (formData: any) => Promise<ExchangeWithLoyaltyResponse>;
     fetchClients: () => Promise<FunctionResponse>;
     fetchTransactionsByClient: (idClient: number) => Promise<FunctionResponse>;
     fetchTransactionsPending: (idClient: number) => Promise<FunctionResponse>;
@@ -37,18 +35,18 @@ export const TransactionProvider: React.FC<{
     const [transactionData, setBonusData] = useState<Transaction[] | null>(null);
     const [isLoading, setisLoading] = useState(true)
 
-    const fetchTransactionData = async () => {
-        try {
-            const response = await fetch(
-                "http://192.168.18.25::3003/api-bonus/listAccumulate"
-            );
-            const data = await response.json();
-            setBonusData(data.data);
-            setisLoading(false)
-        } catch (error) {
-            console.error("Error al obtener los datos:", error);
-        }
-    };
+    /*     const fetchTransactionData = async () => {
+            try {
+                const response = await fetch(
+                    "http://192.168.18.25::3003/api-bonus/listAccumulate"
+                );
+                const data = await response.json();
+                setBonusData(data.data);
+                setisLoading(false)
+            } catch (error) {
+                console.error("Error al obtener los datos:", error);
+            }
+        }; */
     const fetchTransactionsByClient = async (idClient: number): Promise<FunctionResponse> => {
         try {
             const response = await fetch(
@@ -77,7 +75,6 @@ export const TransactionProvider: React.FC<{
                 "http://192.168.18.25:3003/api-bonus/listClients"
             );
             const data = await response.json();
-            console.log(data.data)
             return {
                 estado: true,
                 data: data.data
@@ -88,7 +85,7 @@ export const TransactionProvider: React.FC<{
             }
         }
     }
-    const exchangeWithLoyalty = async (formData: any): Promise<ExchangeWithLoyaltyResponse> => {
+    /* const exchangeWithLoyalty = async (formData: any): Promise<ExchangeWithLoyaltyResponse> => {
         try {
             const response = await fetch("http://192.168.18.25:3003/api-bonus/exchange/card", {
                 method: "POST",
@@ -116,7 +113,7 @@ export const TransactionProvider: React.FC<{
                 error: error as string
             }
         }
-    };
+    }; */
     const fetchTransactionsPending = async (idClient: number): Promise<FunctionResponse> => {
         try {
             const response = await fetch(
@@ -139,16 +136,15 @@ export const TransactionProvider: React.FC<{
             }
         }
     }
-    useEffect(() => {
-        fetchTransactionData()
-    }, [])
+    /*     useEffect(() => {
+            fetchTransactionData()
+        }, []) */
     return (
-        <TransactionContext.Provider value={{ transactionData, fetchTransactionData, isLoading, exchangeWithLoyalty, fetchClients, fetchTransactionsByClient, fetchTransactionsPending }}>
+        <TransactionContext.Provider value={{ transactionData, isLoading, fetchClients, fetchTransactionsByClient, fetchTransactionsPending }}>
             {children}
         </TransactionContext.Provider>
     );
 };
-
 export const useTransactionContext = () => {
     const context = useContext(TransactionContext);
     if (context === undefined) {
