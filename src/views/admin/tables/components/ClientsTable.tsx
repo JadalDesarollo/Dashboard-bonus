@@ -24,7 +24,7 @@ interface ClientsData {
   documento: string
   transacciones: string;
 }
-function ColumnsTable(props: { tableData: any }) {
+function ClientsTable() {
   const { fetchClients } = useTransactionContext()
   const [isLoading, setisLoading] = useState<boolean>(false)
   const [data, setData] = useState<ClientsData[]>([])
@@ -118,7 +118,7 @@ function ColumnsTable(props: { tableData: any }) {
   ];
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   });
   const [nameFilter, setNameFilter] = React.useState<string>("");
   const [documentFilter, setDocumentFilter] = React.useState<string>("");
@@ -340,5 +340,5 @@ function ColumnsTable(props: { tableData: any }) {
   );
 }
 
-export default ColumnsTable;
+export default ClientsTable;
 const columnHelper = createColumnHelper<ClientsData>();

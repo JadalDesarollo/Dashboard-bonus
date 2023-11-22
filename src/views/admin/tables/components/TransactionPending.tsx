@@ -149,7 +149,7 @@ function TransactionPending() {
 
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: 0,
-        pageSize: 5,
+        pageSize: 10,
     });
     const [nameFilter, setNameFilter] = React.useState<string>("");
     const [documentFilter, setDocumentFilter] = React.useState<string>("");

@@ -27,6 +27,8 @@ interface BonusContextType {
     fetchClients: () => Promise<FunctionResponse>;
     fetchTransactionsByClient: (idClient: number) => Promise<FunctionResponse>;
     fetchTransactionsPending: (idClient: number) => Promise<FunctionResponse>;
+    fetchTransactions: () => Promise<FunctionResponse>;
+
 }
 const TransactionContext = createContext<BonusContextType | undefined>(undefined);
 export const TransactionProvider: React.FC<{
@@ -35,18 +37,25 @@ export const TransactionProvider: React.FC<{
     const [transactionData, setBonusData] = useState<Transaction[] | null>(null);
     const [isLoading, setisLoading] = useState(true)
 
-    /*     const fetchTransactionData = async () => {
-            try {
-                const response = await fetch(
-                    "http://192.168.18.25::3003/api-bonus/listAccumulate"
-                );
-                const data = await response.json();
-                setBonusData(data.data);
-                setisLoading(false)
-            } catch (error) {
-                console.error("Error al obtener los datos:", error);
+    const fetchTransactions = async () => {
+        try {
+            const response = await fetch(
+                "http://192.168.18.25:3003/api-bonus/listAccumulate"
+            );
+            const data = await response.json();
+            console.log(data)
+            return {
+                estado: true,
+                data: data.data,
+                cliente: data.cliente
             }
-        }; */
+        } catch (error) {
+            console.log(error)
+            return {
+                estado: false,
+            }
+        };
+    }
     const fetchTransactionsByClient = async (idClient: number): Promise<FunctionResponse> => {
         try {
             const response = await fetch(
@@ -94,7 +103,7 @@ export const TransactionProvider: React.FC<{
                 },
                 body: JSON.stringify(formData),
             });
-
+ 
             if (response.ok) {
                 fetchTransactionData()
                 return {
@@ -140,7 +149,7 @@ export const TransactionProvider: React.FC<{
             fetchTransactionData()
         }, []) */
     return (
-        <TransactionContext.Provider value={{ transactionData, isLoading, fetchClients, fetchTransactionsByClient, fetchTransactionsPending }}>
+        <TransactionContext.Provider value={{ transactionData, isLoading, fetchClients, fetchTransactionsByClient, fetchTransactionsPending, fetchTransactions }}>
             {children}
         </TransactionContext.Provider>
     );

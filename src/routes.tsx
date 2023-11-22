@@ -17,6 +17,8 @@ import {
 } from "react-icons/md";
 import TransactionClient from "views/admin/tables/components/TransactionCliente";
 import TransactionPending from "views/admin/tables/components/TransactionPending";
+import ClientsTable from "views/admin/tables/components/ClientsTable";
+import ClientsTable2 from "views/admin/tables/components/ClientsTable2";
 
 const routes = [
   {
@@ -25,6 +27,13 @@ const routes = [
     icon: <MdBarChart className="h-6 w-6" />,
     path: "clientes",
     component: <DataTables />,
+  },
+  {
+    name: "Reportes",
+    layout: "/admin",
+    icon: <MdBarChart className="h-6 w-6" />,
+    path: "reportes",
+    component: <ClientsTable2 />,
   },
   {
     name: "Movimientos",

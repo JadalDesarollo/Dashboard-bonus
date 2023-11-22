@@ -46,7 +46,16 @@ export default function Admin(props: { [x: string]: any }) {
   };
   const getRoutes = (routes: RoutesType[]): any => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/admin") {
+      if (prop.layout) {
+        // Check if layout is defined
+        return (
+          <Route
+            path={`/${prop.path}`}
+            element={prop.component}
+            key={key}
+          />
+        );
+      } else if (prop.layout === "/admin") {
         if (prop.path === "clientes") {
           // Ruta principal de "Clientes"
           return (
@@ -62,9 +71,8 @@ export default function Admin(props: { [x: string]: any }) {
             />
           );
         }
-      } else {
-        return null;
       }
+      return null;
     });
   };
 
@@ -97,7 +105,7 @@ export default function Admin(props: { [x: string]: any }) {
                   path="admin/"
                   element={<Navigate to="/admin/clientes" replace />}
                 />
-                  
+
 
               </Routes>
             </div>
