@@ -30,13 +30,13 @@ const Sidebar = (props: {
       </span>
 
       <div className={`mx-[56px] mt-[50px] mb-[50px] flex items-center`}>
-        <div className="mt-1 ml-1 h-2.5 font-poppins text-[26px] font-bold uppercase text-navy-700 dark:text-white">
-          JADAL <span className="font-medium ">XYZ</span>
+        <div className="flex flex-col items-center mt-1 ml-1 h-2.5 font-poppins text-[26px] font-bold uppercase  text-navy-700 dark:text-white">
+          <h1 className="m-0 p-0 mt-3" style={{ lineHeight: "0.5" }}>JADAL</h1>
+          <h2 className="font-medium mb-0">SOFTWARE</h2>
         </div>
       </div>
       <div className="mt-[58px] mb-7 h-px bg-gray-300 dark:bg-white/30" />
       {/* Nav item */}
-
       <ul className="mb-auto pt-1">
         <Links routes={routes.slice(0, 2)} />
       </ul>

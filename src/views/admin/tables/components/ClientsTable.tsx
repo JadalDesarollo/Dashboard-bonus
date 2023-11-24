@@ -164,22 +164,22 @@ function ClientsTable() {
   }
   return (
     <Card extra={"w-full pb-10 p-4 h-full mt-6"}>
-      <form className="flex gap-4" onSubmit={filterData}>
-        <InputField id="filter-search" type="search" label="Nombres" placeholder="Ingrese nombres" variant="none" extra="basis-80"
+      <form className="flex gap-4 flex-wrap" onSubmit={filterData}>
+        <InputField id="filter-search" type="search" label="Nombres" placeholder="Ingrese nombres" variant="none" extra="basis-80 grow md:grow-0"
           onChange={(e) => {
             setNameFilter(e.target.value);
             setIsFormValid(Boolean(e.target.value) || Boolean(documentFilter))
           }}
         />
-        <InputField id="filter-search" type="search" label="Nro Documento" placeholder="Buscar" variant="none" extra="basis-80"
+        <InputField id="filter-search" type="search" label="Nro Documento" placeholder="Buscar" variant="none" extra="basis-80 grow md:grow-0"
           onChange={(e) => {
             setDocumentFilter(e.target.value);
           }}
         />
         <button
           type="submit"
-          className={`text-white px-8 py-1 rounded-md h-12 self-end first-letter
-          bg-brand-500
+          className={`text-white px-8 py-1 rounded-md h-14 self-end first-letter
+          bg-brand-500 w-full md:w-auto
               `}
         >
           Buscar

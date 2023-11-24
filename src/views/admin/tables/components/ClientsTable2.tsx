@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import CardMenu from "components/card/CardMenu";
 import Card from "components/card";
-
+import LogoExcel from "../../../../assets/svg/excel-logo.svg"
+import LogoPDF from "../../../../assets/svg/pdf-logo.svg"
+import iconExport from "../../../../assets/svg/exportar-logo.svg"
 import {
   createColumnHelper,
   flexRender,
@@ -16,6 +18,7 @@ import InputField from "components/fields/InputField";
 import { useTransactionContext } from "context/TransactionContext";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { set } from "date-fns";
 
 interface Transaccion {
   id: number;
@@ -30,18 +33,28 @@ interface Transaccion {
   tipo: string;
 }
 function ClientsTable2() {
-  const { fetchTransactions } = useTransactionContext()
+  const { fetchTransactions, generatePDF, descargarExcel } = useTransactionContext()
   const [isLoading, setisLoading] = useState<boolean>(false)
+  const [showMessage, setShowMessage] = useState(false);
   const [data, setData] = useState<Transaccion[]>([])
-  const getClients = async () => {
+  const [isFormValid, setIsFormValid] = useState(true)
+  const [searchParams, setSearchParams] = useState({
+    fecha_transaccion_desde: "",
+    fecha_transaccion_hasta: "",
+    tipo: "",
+    codigo_comercio: "",
+    pos_id: "",
+  });
+  const getClients = async (dataFilter: any) => {
     setisLoading(true)
-    const { data } = await fetchTransactions()
+    const { data } = await fetchTransactions(dataFilter)
     setisLoading(false)
     setData(data ?? [])
   }
-  useEffect(() => {
-    getClients()
-  }, [])
+  const isExistData = (): boolean => {
+    return data.length > 0
+  }
+
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const columns = [
@@ -158,9 +171,7 @@ function ClientsTable2() {
     pageIndex: 0,
     pageSize: 10,
   });
-  const [nameFilter, setNameFilter] = React.useState<string>("");
-  const [documentFilter, setDocumentFilter] = React.useState<string>("");
-  const [isFormValid, setIsFormValid] = React.useState<boolean>(false);
+
   const table = useReactTable({
     data,
     columns,
@@ -175,43 +186,97 @@ function ClientsTable2() {
     getPaginationRowModel: getPaginationRowModel(),
     debugTable: true,
   });
+  const getGeneratePDF = async (e: any) => {
+    if (!isExistData()) {
+      return
+    }
+    await generatePDF(searchParams);
+  }
+  const getGenerateExcel = async (e: any) => {
+    if (!isExistData()) {
+      return
+    }
+    await descargarExcel(searchParams);
+  }
   const filterData = async (e: any) => {
     e.preventDefault();
-
+    setShowMessage(true)
+    const fecha_transaccion_desde = e.target.elements.fechaDesde.value;
+    const fecha_transaccion_hasta = e.target.elements.fechaHasta.value;
+    if (fecha_transaccion_desde == "" && fecha_transaccion_hasta == "") {
+      setData([])
+      return setIsFormValid(false)
+    }
+    setIsFormValid(true)
+    const tipo = e.target.elements.tipo.value;
+    const codigo_comercio = e.target.elements.codigoComercio.value;
+    const pos_id = e.target.elements.posId.value;
+    setSearchParams({
+      fecha_transaccion_desde,
+      fecha_transaccion_hasta,
+      tipo,
+      codigo_comercio,
+      pos_id
+    });
+    await getClients({
+      fecha_transaccion_desde,
+      fecha_transaccion_hasta,
+      tipo,
+      codigo_comercio,
+      pos_id
+    });
 
   }
+
   return (
-    <Card extra={"w-full pb-10 p-4 h-full mt-6"}>
-      <form className="flex gap-4" onSubmit={filterData}>
-        <InputField id="filter-search" type="date" label="Fecha Desde" placeholder="Ingrese nombres" variant="none" extra="basis-80"
-          onChange={(e) => {
-            setNameFilter(e.target.value);
-            setIsFormValid(Boolean(e.target.value) || Boolean(documentFilter))
-          }}
+    <Card extra={"w-full pb-10 p-4 h-full mt-6 "}>
+      <form className="flex  gap-4 flex-wrap" onSubmit={filterData}>
+        <InputField id="filter-search" type="date" label="Fecha Desde" placeholder="Ingrese nombres" variant="none"
+          extra={`basis-80 grow md:grow-0`}
+          name="fechaDesde"
+          state={isFormValid}
         />
-        <InputField id="filter-search" type="date" label="Fecha Hasta" placeholder="Buscar" variant="none" extra="basis-80"
-          onChange={(e) => {
-            setDocumentFilter(e.target.value);
-          }}
+        <InputField id="filter-search" type="date" label="Fecha Hasta" placeholder="Buscar" variant="none" extra="basis-80 grow md:grow-0 "
+          name="fechaHasta"
+
         />
-        <InputField id="filter-search" type="select" label="tipo" placeholder="Buscar" variant="none" extra="basis-80"
-          onChange={(e) => {
-            setDocumentFilter(e.target.value);
-          }}
+        <div className="basis-80 grow md:grow-0">
+          <label
+            className="Dtext-sm text-navy-700 dark:text-white ml-3 font-bold"
+          >Tipo</label>
+          <select className="mt-2 flex h-14 w-full items-center justify-center border dark:border-none rounded-xl bg-white/0 p-3 text-sm outline-none dark:bg-gray-800 dark:border-gray-600"
+            name="tipo">
+
+            <option value="">TODOS</option>
+            <option value="CANJE">CANJE</option>
+            <option value="ACUMULACION">ACUMULACION</option>
+            <option value="EXTORNO">EXTORNO</option>
+          </select>
+        </div>
+
+        <InputField id="filter-search" type="search" label="Còdigo comercio" placeholder="Buscar" variant="none" extra="basis-80 grow md:grow-0" name="codigoComercio"
+
         />
-        <InputField id="filter-search" type="select" label="Pos ID" placeholder="Buscar" variant="none" extra="basis-80"
-          onChange={(e) => {
-            setDocumentFilter(e.target.value);
-          }}
+        <InputField id="filter-search" type="search" label="Pos ID" placeholder="Buscar" variant="none" extra="basis-80 grow md:grow-0" name="posId"
+
         />
+
         <button
           type="submit"
-          className={`text-white px-8 py-1 rounded-md h-12 self-end first-letter
-          bg-brand-500
+          className={`text-white px-10 py-2 rounded-md h-12 self-start first-letter
+          bg-brand-500 w-full md:w-auto
+          grow md:grow-0 md:mt-9 xl:mt-auto
               `}
         >
           Buscar
         </button>
+        {
+          !isFormValid ?
+            <p className="text-sm text-red-400 dark:text-red pl-3 mt-4">
+              Ingrese un rango de fecha
+            </p> : null
+        }
+
       </form>
 
       {
@@ -229,8 +294,36 @@ function ClientsTable2() {
 
       {
         !isLoading && data.length > 0 ?
-          <>
-            <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+          <div className="flex flex-col ">
+            <hr className="my-3" />
+            <div className="flex gap-3 ">
+              <span className="text-4 text-navy-700 dark:text-white ml-3 font-bold mt-4">Exportar:</span>
+
+              <button
+                disabled={!isExistData()}
+                type="button"
+                onClick={getGeneratePDF}
+                className={`text-white px-8 py-1 rounded-md h-10 self-end first-letter
+bg-orange-800 w-full md:w-auto
+grow md:grow-0 ${!isExistData() ? 'bg-gray-500 dark:bg-gray-700 cursor-not-allowed' : ''}
+  `}
+              >
+                PDF   <img className="inline" src={LogoPDF} alt="" />
+              </button>
+              <button
+                disabled={!isExistData()}
+                onClick={getGenerateExcel}
+                type="button"
+                className={`text-white px-7 py-1 rounded-md h-10 self-end first-letter
+bg-green-800 w-full md:w-auto
+grow md:grow-0 ${!isExistData() ? 'bg-gray-500 dark:bg-gray-700 cursor-not-allowed' : ''}
+  `}
+              >Excel
+                <img className="inline" src={LogoExcel} alt="" />
+
+              </button>
+            </div>
+            <div className="mt-4 overflow-x-scroll xl:overflow-x-hidden">
               <table className="w-full ">
                 <thead>
                   {table.getHeaderGroups().map((headerGroup) => (
@@ -354,12 +447,13 @@ function ClientsTable2() {
               </div>
             </div>
 
-          </> : null
+
+          </div> : null
       }
       {
-        !isLoading && data.length <= 0 ?
-          <p className="text-sm text-red-700 dark:text-white pl-3 mt-2">
-            No se encontraron clientes registrados
+        showMessage && !isExistData() && isFormValid && !isLoading ?
+          <p className="text-sm text-red-400 dark:text-white pl-3 mt-5">
+            No se encotraron datos para el registro de operaciones
           </p> : null
       }
 

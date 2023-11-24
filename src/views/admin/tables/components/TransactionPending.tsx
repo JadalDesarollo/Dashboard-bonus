@@ -235,7 +235,7 @@ function TransactionPending() {
                     />
                     <button
                         type="submit"
-                        className={`text-white px-8 py-1 rounded-md h-12 self-end first-letter
+                        className={`text-white px-8 py-1 rounded-md h-14 self-end first-letter
 bg-brand-500
 `}
                     >

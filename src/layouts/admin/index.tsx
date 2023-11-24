@@ -105,8 +105,6 @@ export default function Admin(props: { [x: string]: any }) {
                   path="admin/"
                   element={<Navigate to="/admin/clientes" replace />}
                 />
-
-
               </Routes>
             </div>
             <div className="p-3">
