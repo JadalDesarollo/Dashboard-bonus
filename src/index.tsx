@@ -4,13 +4,16 @@ import "./index.css";
 
 import App from "./App";
 import { TransactionProvider } from "context/TransactionContext";
+import { AuthProvider } from "auth/context/AuthContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-  <TransactionProvider>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </TransactionProvider>
+  <AuthProvider>
+    <TransactionProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </TransactionProvider>
+  </AuthProvider>
 );

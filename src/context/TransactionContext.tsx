@@ -1,6 +1,8 @@
 import { format } from "date-fns";
 import React, { createContext, useContext, useState, useEffect } from "react";
+import reportService from "services/ReportService";
 import { useNavigate } from "react-router-dom";
+import ReportService from "services/ReportService";
 interface Transaction {
     id: number;
     codigo_comercio: string;
@@ -40,31 +42,10 @@ export const TransactionProvider: React.FC<{
     const [transactionData, setBonusData] = useState<Transaction[] | null>(null);
     const [isLoading, setisLoading] = useState(true)
     const generatePDF = async (dataFilter: any) => {
-
         try {
-            const response = await fetch(
-                "http://192.168.18.25:3003/api-bonus/generar-pdf",
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(dataFilter),
-                }
-            );
-
-            if (response.ok) {
-                // Si la solicitud es exitosa, descarga el PDF
-                await descargarPDF(response);
-                return {
-                    estado: true,
-                };
-            } else {
-                // Si hay un error en la respuesta, maneja el error
-                console.error('Error en la generación del PDF:', response.statusText);
-                return {
-                    estado: false,
-                };
+            const { estado } = await reportService.generateAndDownloadPDF(dataFilter)
+            return {
+                estado
             }
         } catch (error) {
             console.error('Error en la solicitud:', error);
@@ -73,78 +54,9 @@ export const TransactionProvider: React.FC<{
             };
         }
     };
-
-    const descargarPDF = async (response: Response) => {
-        try {
-            const fileName = `${format(
-                new Date(),
-                "dd_MM_yyyy"
-            )}_REPORTE-TRANSACCIONES-BONUS.pdf`;
-            if (!response.ok) {
-                throw new Error(`Error al descargar el PDF: ${response.statusText}`);
-            }
-
-            // Obtener el contenido del PDF como un blob
-            const blob = await response.blob();
-
-            // Crear una URL del blob
-            const url = window.URL.createObjectURL(blob);
-
-            // Crear un enlace <a> invisible para descargar el PDF
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-
-            // Agregar el enlace al DOM y hacer clic en él
-            document.body.appendChild(a);
-            a.click();
-
-            // Limpiar después de la descarga
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        } catch (error: any) {
-            console.error('Error al descargar el PDF:', error.message);
-            // Manejar errores
-        }
-    };
-
     const descargarExcel = async (dataFilter: any) => {
         try {
-            const fileName = `${format(
-                new Date(),
-                "dd_MM_yyyy"
-            )}_REPORTE-TRANSACCIONES-BONUS.xlsx`;
-            const response = await fetch('http://192.168.18.25:3003/api-bonus/generar-excel', {
-                method: 'POST',  // Cambié el método a 'POST'
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Otros encabezados según sea necesario
-                },
-                body: JSON.stringify(dataFilter),  // Envía el dataFilter en el cuerpo
-            });
-
-            if (!response.ok) {
-                throw new Error('Error al descargar el archivo Excel');
-            }
-
-            // Convertir la respuesta a un blob (formato binario)
-            const blob = await response.blob();
-
-            // Crear una URL del blob
-            const url = window.URL.createObjectURL(blob);
-
-            // Crear un enlace <a> invisible para descargar el archivo Excel
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-
-            // Agregar el enlace al DOM y hacer clic en él
-            document.body.appendChild(a);
-            a.click();
-
-            // Limpiar después de la descarga
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+            await ReportService.generateAndDownloadEXCEL(dataFilter)
         } catch (error: any) {
             console.error('Error al descargar el archivo Excel:', error.message);
             // Manejar errores
@@ -153,7 +65,7 @@ export const TransactionProvider: React.FC<{
     const fetchTransactions = async (dataFilter: any) => {
         try {
             const response = await fetch(
-                "http://192.168.18.25:3003/api-bonus/listAccumulate",
+                `${process.env.REACT_APP_BASE_URL}/listAccumulate`,
                 {
                     method: 'POST',  // Puedes ajustar el método según las necesidades de tu API
                     headers: {
@@ -203,7 +115,7 @@ export const TransactionProvider: React.FC<{
     const fetchClients = async (): Promise<FunctionResponse> => {
         try {
             const response = await fetch(
-                "http://192.168.18.25:3003/api-bonus/listClients"
+                `${process.env.REACT_APP_BASE_URL}/listClients`
             );
             const data = await response.json();
             return {
@@ -248,7 +160,7 @@ export const TransactionProvider: React.FC<{
     const fetchTransactionsPending = async (idClient: number): Promise<FunctionResponse> => {
         try {
             const response = await fetch(
-                `http://192.168.18.25:3003/api-bonus/transactionPending/${idClient}`
+                `${process.env.REACT_APP_BASE_URL}/transactionPending/${idClient}`
             );
             if (!response.ok) {
                 return {

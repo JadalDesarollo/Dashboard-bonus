@@ -6,9 +6,14 @@ import { RiMoonFill, RiSunFill } from "react-icons/ri";
 export default function FixedPlugin(props: { [s: string]: any }) {
   const { ...rest } = props;
   const [darkmode, setDarkmode] = React.useState(
-    document.body.classList.contains("dark")
+    (JSON.parse(localStorage.getItem("mode")) === "dark") ? true : false
   );
-
+  if (JSON.parse(localStorage.getItem("mode")) == "dark") {
+    console.log('es dark')
+    document.body.classList.add("dark");
+  } else {
+    document.body.classList.remove("dark");
+  }
   return (
     <button
       className="border-px fixed bottom-[30px] right-[35px] !z-[99] flex h-[60px] w-[60px] items-center justify-center rounded-full border-[#6a53ff] bg-gradient-to-br from-brandLinear to-blueSecondary p-0"
@@ -16,9 +21,11 @@ export default function FixedPlugin(props: { [s: string]: any }) {
         if (darkmode) {
           document.body.classList.remove("dark");
           setDarkmode(false);
+          localStorage.setItem("mode", JSON.stringify('ligth'));
         } else {
           document.body.classList.add("dark");
           setDarkmode(true);
+          localStorage.setItem("mode", JSON.stringify('dark'));
         }
       }}
       {...rest}

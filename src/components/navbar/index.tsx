@@ -19,16 +19,15 @@ const Navbar = (props: {
 }) => {
   const { onOpenSidenav, brandText } = props;
   const [darkmode, setDarkmode] = React.useState(
-    false
+    (JSON.parse(localStorage.getItem("mode")) === "dark") ? true : false
   );
 
-  if (localStorage.getItem("mode") == "dark") {
+  if (JSON.parse(localStorage.getItem("mode")) == "dark") {
+    console.log('es dark')
     document.body.classList.add("dark");
   } else {
     document.body.classList.remove("dark");
   }
-
-
 
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
@@ -74,12 +73,12 @@ const Navbar = (props: {
             if (darkmode) {
               document.body.classList.remove("dark");
               setDarkmode(false);
-              localStorage.setItem("mode", JSON.stringify("ligth"));
+              localStorage.setItem("mode", JSON.stringify('ligth'));
 
             } else {
               document.body.classList.add("dark");
               setDarkmode(true);
-              localStorage.setItem("mode", JSON.stringify("dark"));
+              localStorage.setItem("mode", JSON.stringify('dark'));
             }
           }}
         >
