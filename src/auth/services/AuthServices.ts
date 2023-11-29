@@ -17,50 +17,58 @@ const login = async (data: {
   email: string;
   password: string;
 }): Promise<Login> => {
+  try {
     const resp = await fetchSinToken("login", "POST", data);
     if (resp.ok) {
-    localStorage.setItem("token", resp.token);
-    const { usuario } = resp;
-    return {
+      localStorage.setItem("token", resp.token);
+      const { usuario } = resp;
+      return {
         status: true,
         userData: {
-            id: usuario.uid,
-            logged: true,
-            name: usuario.nombre,
-            email: usuario.email,
-            rol: usuario.rol,
+          id: usuario.uid,
+          logged: true,
+          name: usuario.nombre,
+          email: usuario.email,
+          rol: usuario.rol,
         },
+      };
+    }
+    return {
+      status: false,
+      userData: dataUserEmpty,
+    };
+  } catch (error) {
+    return {
+      status: false,
+      userData: dataUserEmpty,
     };
   }
-  return {
-    status: false,
-    userData: dataUserEmpty,
-  };
+
 };
 const checkToken = async (): Promise<Login> => {
   const token = localStorage.getItem("token");
   if (!token) {
     return {
-        status: false,
-        userData: dataUserEmpty,
+      status: false,
+      userData: dataUserEmpty,
     };
-    }
-    const resp = await fetchConToken("login/renew");
-    if (resp.ok) {
+  }
+  const resp = await fetchConToken("login/renew");
+  if (resp.ok) {
     localStorage.setItem("token", resp.token);
     const { usuario } = resp;
     return {
-        status: false,
-        userData: usuario,
+      status: false,
+      userData: usuario,
     };
-    } else {
+  } else {
     return {
-        status: false,
-        userData: dataUserEmpty,
+      status: false,
+      userData: dataUserEmpty,
     };
-    }
+  }
 };
 export const serviceAuth = {
-    login,
-    checkToken,
+  login,
+  checkToken,
 };
