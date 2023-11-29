@@ -56,11 +56,10 @@ export default function SignIn() {
     if (validateForm()) {
       // Realizar el inicio de sesión
       const status = await login(formData.email, formData.password);
-
       if (status) {
-        navigate('admin')
+        navigate('/admin')
       } else {
-        console.log('fallo login')
+
       }
     }
   };
