@@ -8,7 +8,6 @@ import { useState } from "react";
 export default function SignIn() {
   const { login } = useAuthContext();
   const navigate = useNavigate()
-
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -16,6 +15,7 @@ export default function SignIn() {
   const [formErrors, setFormErrors] = useState({
     email: '',
     password: '',
+    login: ''
   });
 
   const handleInputChange = (e: any) => {
@@ -29,37 +29,31 @@ export default function SignIn() {
       [id]: '',
     });
   };
-
   const validateForm = () => {
     let isValid = true;
     const newErrors = { ...formErrors };
-
-    // Validación del correo electrónico
-    if (!formData.email) {
+    if (!formData.email.trim()) {
       newErrors.email = 'Por favor, ingresa tu correo electrónico';
       isValid = false;
     }
-
-    // Validación de la contraseña
-    if (!formData.password) {
+    if (!formData.password.trim()) {
       newErrors.password = 'Por favor, ingresa tu contraseña';
       isValid = false;
     }
-
     setFormErrors(newErrors);
     return isValid;
   };
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
     if (validateForm()) {
-      // Realizar el inicio de sesión
       const status = await login(formData.email, formData.password);
       if (status) {
         navigate('/admin')
       } else {
-
+        setFormErrors({
+          ...formErrors,
+          login: 'Usuario o contraseña incorrectos'
+        })
       }
     }
   };
@@ -81,13 +75,16 @@ export default function SignIn() {
         </div>
         <form onSubmit={handleSubmit}>
           {/* Email */}
-          {formErrors.email && formErrors.password ? (
-            <p className="text-red-300 text-sm mt-1">{formErrors.email}</p>
+          {formErrors.email ? (
+            <p className="text-red-300 text-sm mb-1">{formErrors.email}</p>
+          ) : null}
+          {formErrors.password && formErrors.email == "" ? (
+            <p className="text-red-300 text-sm mb-1">{formErrors.password}</p>
+          ) : null}
+          {formErrors.login ? (
+            <p className="text-red-300 text-sm mb-1">{formErrors.login}</p>
           ) : null}
 
-          {formErrors.password && !formErrors.email ? (
-            <p className="text-red-300 text-sm mt-1">{formErrors.email}</p>
-          ) : null}
           <InputField
             variant="auth"
             extra="mb-3"

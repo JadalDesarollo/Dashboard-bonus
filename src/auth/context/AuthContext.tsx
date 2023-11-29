@@ -18,7 +18,7 @@ export interface AuthContext {
 }
 const initialState: authStateUser = {
     id: null,
-    logged: false,
+    logged: true,
     name: null,
     email: null,
     rol: null
@@ -29,9 +29,14 @@ export const AuthProvider: React.FC<{
 }> = ({ children }: { children?: React.ReactNode }) => {
     const [auth, setAuth] = useState<authStateUser>(initialState)
     const login = async (email: string, password: string) => {
-        const { status, userData } = await serviceAuth.login({ email, password })
-        setAuth(userData)
-        return status
+        try {
+            const { status, userData } = await serviceAuth.login({ email, password })
+            setAuth(userData)
+            console.log(status)
+            return status
+        } catch (error) {
+            return false
+        }
     }
     const checkToken = useCallback(async () => {
         const { status } = await serviceAuth.checkToken()

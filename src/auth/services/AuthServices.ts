@@ -32,10 +32,7 @@ const login = async (data: {
       },
     };
   }
-  return {
-    status: false,
-    userData: dataUserEmpty,
-  };
+
 };
 const checkToken = async (): Promise<Login> => {
   const token = localStorage.getItem("token");
