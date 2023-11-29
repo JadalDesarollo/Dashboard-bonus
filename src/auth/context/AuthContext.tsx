@@ -1,7 +1,7 @@
 import { InitialTableState } from '@tanstack/react-table';
 import { Login, serviceAuth } from 'auth/services/AuthServices';
 import { fetchConToken } from 'helpers/fetch';
-import { createContext, useCallback, useContext, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 
 export interface authStateUser {
     id: Number,
@@ -18,7 +18,7 @@ export interface AuthContext {
 }
 const initialState: authStateUser = {
     id: null,
-    logged: true,
+    logged: false,
     name: null,
     email: null,
     rol: null
@@ -27,6 +27,8 @@ const AuthContext = createContext<AuthContext | undefined>(undefined);
 export const AuthProvider: React.FC<{
     children?: React.ReactNode;
 }> = ({ children }: { children?: React.ReactNode }) => {
+
+
     const [auth, setAuth] = useState<authStateUser>(initialState)
     const login = async (email: string, password: string) => {
         try {
