@@ -93,7 +93,7 @@ export const TransactionProvider: React.FC<{
     const fetchTransactionsByClient = async (idClient: number): Promise<FunctionResponse> => {
         try {
             const response = await fetch(
-                `http://192.168.18.25:3003/api-bonus/listAccumulate/${idClient}`
+                `${process.env.REACT_APP_BASE_URL}/listAccumulate/${idClient}`
             );
             if (!response.ok) {
                 return {

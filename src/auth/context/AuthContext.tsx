@@ -18,7 +18,7 @@ export interface AuthContext {
 }
 const initialState: authStateUser = {
     id: null,
-    logged: false,
+    logged: true,
     name: null,
     email: null,
     rol: null
