@@ -18,7 +18,7 @@ export interface AuthContext {
 }
 const initialState: authStateUser = {
     id: null,
-    logged: true,
+    logged: false,
     name: null,
     email: null,
     rol: null
@@ -28,9 +28,11 @@ export const AuthProvider: React.FC<{
     children?: React.ReactNode;
 }> = ({ children }: { children?: React.ReactNode }) => {
 
-
     const [auth, setAuth] = useState<authStateUser>(initialState)
+
     const login = async (email: string, password: string) => {
+
+
         try {
             const { status, userData } = await serviceAuth.login({ email, password })
             setAuth(userData)
@@ -40,31 +42,12 @@ export const AuthProvider: React.FC<{
             return false
         }
     }
-    const checkToken = useCallback(async () => {
-        const { status } = await serviceAuth.checkToken()
-        if (status) {
-            const resp = await fetchConToken('login/renew');
-            if (resp.ok) {
-                localStorage.setItem('token', resp.token);
-                const { usuario } = resp;
-                setAuth({
-                    id: usuario.uid,
-                    logged: true,
-                    name: usuario.nombre,
-                    email: usuario.email,
-                    rol: usuario.rol
-                });
-            } else {
-                setAuth({
-                    id: null,
-                    logged: false,
-                    name: null,
-                    email: null,
-                    rol: null
-                });
-            }
-        }
-    }, [])
+    const checkToken = async () => {
+        const { status, userData } = await serviceAuth.checkToken()
+
+        setAuth(userData)
+
+    }
     const logout = () => {
         localStorage.removeItem('token');
         setAuth({

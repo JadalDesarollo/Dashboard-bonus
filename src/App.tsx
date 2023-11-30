@@ -3,6 +3,7 @@ import AdminLayout from "layouts/admin";
 import AuthLayout from "layouts/auth";
 import ProtectedRoute from "routes/ProtectedRoute";
 import { useEffect } from "react";
+import { useAuthContext } from "auth/context/AuthContext";
 const App = () => {
 
   return (
@@ -14,7 +15,7 @@ const App = () => {
       } />
       <Route path="auth/*" element={<AuthLayout />} />
       <Route path="/" element={<Navigate to="/admin" replace />} />
-      <Route path="*" element={<Navigate to="/auth" replace />} />
+      <Route path="*" element={<Navigate to="/admin" replace />} />
     </Routes>
   );
 };
