@@ -27,25 +27,42 @@ const AuthContext = createContext<AuthContext | undefined>(undefined);
 export const AuthProvider: React.FC<{
     children?: React.ReactNode;
 }> = ({ children }: { children?: React.ReactNode }) => {
-
     const [auth, setAuth] = useState<authStateUser>(initialState)
-
     const login = async (email: string, password: string) => {
-
-
         try {
-            const { status, userData } = await serviceAuth.login({ email, password })
+            /* const { status, userData } = await serviceAuth.login({ email, password })
             setAuth(userData)
-            console.log(status)
-            return status
+            console.log(status) */
+            localStorage.setItem('token', "adas");
+            setAuth({
+                ...auth,
+                logged: true
+            })
+
+            return true
+
+
         } catch (error) {
             return false
         }
     }
     const checkToken = async () => {
-        const { status, userData } = await serviceAuth.checkToken()
+        //  const { status, userData } = await serviceAuth.checkToken()
+        if (localStorage.getItem('token')) {
 
-        setAuth(userData)
+            console.log('si hay')
+            setAuth({
+                ...auth,
+                logged: true
+            })
+            return
+        }
+        setAuth({
+            ...auth,
+            logged: false
+        })
+        console.log('no hay')
+
 
     }
     const logout = () => {

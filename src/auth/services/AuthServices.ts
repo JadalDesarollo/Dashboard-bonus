@@ -14,6 +14,7 @@ export interface Login {
 const dataUserEmpty: authStateUser = {
   id: null,
   logged: false,
+
   name: null,
   email: null,
   rol: null,
@@ -32,6 +33,7 @@ const login = async (data: {
         userData: {
           id: usuario.id,
           logged: true,
+  
           name: usuario.name,
           email: "email@test",
           rol: usuario.rol[0],
@@ -60,11 +62,11 @@ const checkToken = async (): Promise<Login> => {
       };
     }
     const resp = await fetchAuthRefresh("refresh/token", "POST");
-    
+
     if (resp.success) {
       localStorage.setItem("token", resp.data.token);
       const { data: usuario } = resp;
-    
+
       return {
         status: true,
         userData: {

@@ -5,25 +5,15 @@ type ProtectedRouteProps = RouteProps & {
   children?: React.ReactNode
 };
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { auth ,checkToken} = useAuthContext()
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log('refresh');
-        await checkToken();
+  const { auth, checkToken } = useAuthContext();
 
-      } catch (error) {
-        console.error('Error al verificar el token:', error);
-      }
-    };
 
-    fetchData();
-  }, []);
-  console.log(auth)
-  return auth.logged ? (
-    <>{children}</>
-  ) : (
-    <Navigate to="/auth/sign-in" />
-  );
+
+  if (auth.logged) {
+    return <>{children}</>;
+  } else {
+    return <Navigate to="/auth/sign-in" />;
+  }
 }
+
 export default ProtectedRoute;
