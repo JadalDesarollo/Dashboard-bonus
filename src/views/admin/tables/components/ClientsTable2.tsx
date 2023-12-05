@@ -18,7 +18,7 @@ import InputField from "components/fields/InputField";
 import { useTransactionContext } from "context/TransactionContext";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { set } from "date-fns";
+import { format, parseISO, set } from "date-fns";
 
 interface Transaccion {
   id: number;
@@ -109,7 +109,7 @@ function ClientsTable2() {
     columnHelper.accessor("puntos", {
       id: "puntos",
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">Monto</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">Puntos</p>
       ),
       cell: (info) => (
         <p className="text-sm font-light text-navy-700 dark:text-white">
@@ -158,7 +158,7 @@ function ClientsTable2() {
       ),
       cell: (info) => (
         <p className="text-sm font-light text-navy-700 dark:text-white">
-          {info.getValue()}
+          {format(parseISO(info.getValue()), 'dd MMM yyyy HH:mm:ss')}
         </p>
       ),
     }),
@@ -254,10 +254,10 @@ function ClientsTable2() {
           </select>
         </div>
 
-        <InputField id="filter-search" type="search" label="Còdigo comercio" placeholder="Buscar" variant="none" extra="basis-80 grow md:grow-0" name="codigoComercio"
+        <InputField id="filter-search" type="search" label="Código comercio" placeholder="Ingrese código comercio" variant="none" extra="basis-80 grow md:grow-0" name="codigoComercio"
 
         />
-        <InputField id="filter-search" type="search" label="Pos ID" placeholder="Buscar" variant="none" extra="basis-80 grow md:grow-0" name="posId"
+        <InputField id="filter-search" type="search" label="Pos ID" placeholder="Ingrese pos ID" variant="none" extra="basis-80 grow md:grow-0" name="posId"
 
         />
 
@@ -272,7 +272,7 @@ function ClientsTable2() {
         </button>
         {
           !isFormValid ?
-            <p className="text-sm text-red-400 dark:text-red pl-3 mt-4">
+            <p className="text-sm text-red-400 dark:text-red pl-3 self-center mt-10">
               Ingrese un rango de fecha
             </p> : null
         }
@@ -304,7 +304,7 @@ function ClientsTable2() {
                 type="button"
                 onClick={getGeneratePDF}
                 className={`text-white px-8 py-1 rounded-md h-10 self-end first-letter
-bg-orange-800 w-full md:w-auto
+bg-orange-800 w-full md:w-auto text-[14px] lg:text-auto
 grow md:grow-0 ${!isExistData() ? 'bg-gray-500 dark:bg-gray-700 cursor-not-allowed' : ''}
   `}
               >
@@ -315,7 +315,7 @@ grow md:grow-0 ${!isExistData() ? 'bg-gray-500 dark:bg-gray-700 cursor-not-allow
                 onClick={getGenerateExcel}
                 type="button"
                 className={`text-white px-7 py-1 rounded-md h-10 self-end first-letter
-bg-green-800 w-full md:w-auto
+bg-green-800 w-full md:w-auto text-[14px]
 grow md:grow-0 ${!isExistData() ? 'bg-gray-500 dark:bg-gray-700 cursor-not-allowed' : ''}
   `}
               >Excel
@@ -379,27 +379,30 @@ grow md:grow-0 ${!isExistData() ? 'bg-gray-500 dark:bg-gray-700 cursor-not-allow
 
                 </tbody>
               </table>
-              {/* Paginación */}
-              <div className=" outline outline-1 outline-gray-200 flex gap-5 justify-start items-center pt-4">
-                <button
-                  onClick={() => {
-                    table.previousPage();
-                  }}
-                  disabled={!table.getCanPreviousPage()}
-                  className="cursor-pointer"
-                >
-                  {"<"}
-                </button>{" "}
-                <button
-                  onClick={() => {
-                    table.nextPage();
-                  }}
-                  disabled={!table.getCanNextPage()}
-                  className="cursor-pointer"
-                >
-                  {">"}
-                </button>{" "}
-                {/*           <button
+
+            </div>
+            {/* Paginación */}
+            <hr />
+            <div className="flex flex-wrap  gap-5 justify-center lg:justify-start items-center pt-4">
+              <button
+                onClick={() => {
+                  table.previousPage();
+                }}
+                disabled={!table.getCanPreviousPage()}
+                className="cursor-pointer"
+              >
+                {"<"}
+              </button>{" "}
+              <button
+                onClick={() => {
+                  table.nextPage();
+                }}
+                disabled={!table.getCanNextPage()}
+                className="cursor-pointer"
+              >
+                {">"}
+              </button>{" "}
+              {/*           <button
             onClick={() => {
               table.setPageIndex(table.getPageCount() - 1); // Ir a la última página
             }}
@@ -407,52 +410,51 @@ grow md:grow-0 ${!isExistData() ? 'bg-gray-500 dark:bg-gray-700 cursor-not-allow
           >
             {">>"}
           </button>{" "} */}
-                <span>
-                  Página{" "}
-                  <strong>
-                    {table.getState().pagination.pageIndex + 1} de{" "}
-                    {table.getPageCount()}
-                  </strong>{" "}
-                </span>
-                <span className="flex items-center gap-3">
-                  Ir a:
-                  <input
-                    type="number"
-                    value={Math.max(1, Math.min(table.getPageCount(), table.getState().pagination.pageIndex + 1))}
-                    onChange={(e) => {
-                      const page = e.target.value ? Math.max(1, Math.min(table.getPageCount(), Number(e.target.value))) - 1 : 0;
-                      table.setPageIndex(page);
-                    }}
-                    className=" p-1 rounded w-16 dark:bg-gray-800"
-                  />
-                </span>
-                <select
-                  className="dark:bg-gray-800"
-                  value={table.getState().pagination.pageSize}
+              <span>
+                Página{" "}
+                <strong>
+                  {table.getState().pagination.pageIndex + 1} de{" "}
+                  {table.getPageCount()}
+                </strong>{" "}
+              </span>
+              <span className="flex items-center gap-3">
+                Ir a:
+                <input
+                  type="number"
+                  value={Math.max(1, Math.min(table.getPageCount(), table.getState().pagination.pageIndex + 1))}
                   onChange={(e) => {
-                    table.setPageSize(Number(e.target.value));
+                    const page = e.target.value ? Math.max(1, Math.min(table.getPageCount(), Number(e.target.value))) - 1 : 0;
+                    table.setPageIndex(page);
                   }}
-                >
-                  {[5, 10, 20].map((pageSize) => (
-                    <option
-                      className="appearance-none"
-                      key={pageSize} value={pageSize}>
-                      Mostrar {pageSize}
-                    </option>
-                  ))}
-                </select>
-                <span>
-                  Cantidad de transacciones: <strong>{data.length}</strong>
-                </span>
-              </div>
+                  className=" p-1 rounded w-16 dark:bg-gray-800"
+                />
+              </span>
+              <select
+                className="dark:bg-gray-800 p-1 rounded flex items-center"
+                value={table.getState().pagination.pageSize}
+                onChange={(e) => {
+                  table.setPageSize(Number(e.target.value));
+                }}
+              >
+                {[5, 10, 20].map((pageSize) => (
+                  <option
+                    className="appearance-none"
+                    key={pageSize} value={pageSize}>
+                    Mostrar {pageSize}
+                  </option>
+                ))}
+              </select>
+              <span>
+                Cantidad de transacciones: <strong>{data.length}</strong>
+              </span>
             </div>
 
 
           </div> : null
-      } 
+      }
       {
         showMessage && !isExistData() && isFormValid && !isLoading ?
-          <p className="text-sm text-red-400 dark:text-white pl-3 mt-5">
+          <p className="text-sm text-red-500 dark:text-red-300 pl-3 mt-5">
             No se encotraron datos para el registro de operaciones
           </p> : null
       }

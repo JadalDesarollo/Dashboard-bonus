@@ -36,10 +36,10 @@ export default function Auth() {
                     element={<Navigate to={"/auth/sign-in"} />}
                   />
                 </Routes>
-                <div className="absolute right-0 hidden h-full   min-h-screen md:block lg:w-[49vw] 2xl:w-[50vw]">
+                <div className="absolute right-0 hidden h-full   min-h-screen md:block lg:w-[49vw] 2xl:w-[50vw]  ">
                   <div
-                    className="absolute flex h-full w-full items-end justify-center bg-cover"
-                    style={{ backgroundImage: `url(${authImg})` }}
+                    className="absolute flex h-full w-full items-end justify-center align bg-contain bg-no-repeat items-center bg-center"
+                    style={{ backgroundImage: `url(${authImg})`, backgroundColor:" #062053"}}
                   />
                 </div>
               </div>

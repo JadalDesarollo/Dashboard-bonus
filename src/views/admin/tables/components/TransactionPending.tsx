@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CardMenu from "components/card/CardMenu";
 import Card from "components/card";
-
+import LogoBack from "../../../../assets/svg/back-arrow.svg"
 import {
     createColumnHelper,
     flexRender,
@@ -241,6 +241,17 @@ bg-brand-500
                     >
                         Buscar
                     </button>
+                    <button
+                        className={`text-white px-8 py-1 rounded-md h-14 self-end first-letter w-full md:w-auto
+          grow md:grow-0 ml-auto
+              `}
+                        onClick={() => {
+                            navigate(-1)
+                        }}
+                    >
+                        <img className="inline fill-white" src={LogoBack} alt="" />
+
+                    </button>
                 </form>
 
                 {
@@ -362,7 +373,7 @@ disabled={!table.getCanNextPage()}
                                     />
                                 </span>
                                 <select
-                                    className="dark:bg-gray-800"
+                                    className="dark:bg-gray-800 p-1 rounded flex items-center"
                                     value={table.getState().pagination.pageSize}
                                     onChange={(e) => {
                                         table.setPageSize(Number(e.target.value));
@@ -386,7 +397,7 @@ disabled={!table.getCanNextPage()}
 
                 {
                     !isLoading && data.length <= 0 ?
-                        <p className="text-sm text-green-700 dark:text-white pl-3">
+                        <p className="text-sm text-green-700 dark:text-green-500 pl-3">
                             Sin transacciones pendientes
                         </p> : null
                 }

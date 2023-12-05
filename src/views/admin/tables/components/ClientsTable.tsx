@@ -73,7 +73,7 @@ function ClientsTable() {
       ),
       cell: (info) => (
         <p className="text-sm font-light text-navy-700 dark:text-white">
-          {info.getValue()}
+          {info.getValue() == "" ? 'No registrado' : info.getValue()}
         </p>
       ),
     }),
@@ -97,16 +97,15 @@ function ClientsTable() {
         <>
           <Link to={`/admin/clientes/${info.getValue()}`}>
             <button
-
-              className="bg-brand-500 text-white px-8 py-1 rounded-md mr-2" >
+              className="bg-brand-500 text-white px-7 py-1 rounded-md mr-2 w-13" >
               ver
             </button>
           </Link>
 
           <Link to={`/admin/clientes/pendientes/${info.getValue()}`}>
             <button
-              className="bg-red-400 text-white px-8 py-1 rounded-md mr-2" >
-              ...
+              className="bg-red-400 text-white px-8 py-1 rounded-md mr-2 w-35 mt-2 lg:mt-0" >
+              ....
             </button>
           </Link>
 
@@ -171,7 +170,7 @@ function ClientsTable() {
             setIsFormValid(Boolean(e.target.value) || Boolean(documentFilter))
           }}
         />
-        <InputField id="filter-search" type="search" label="Nro Documento" placeholder="Buscar" variant="none" extra="basis-80 grow md:grow-0"
+        <InputField id="filter-search" type="search" label="Nro Documento" placeholder="Ingrese Nro Documento" variant="none" extra="basis-80 grow md:grow-0"
           onChange={(e) => {
             setDocumentFilter(e.target.value);
           }}
@@ -257,9 +256,11 @@ function ClientsTable() {
                     })}
 
                 </tbody>
+         
               </table>
               {/* Paginación */}
-              <div className=" outline outline-1 outline-gray-200 flex gap-5 justify-start items-center pt-4">
+              <hr />
+              <div className="  outline-gray-200 flex gap-5 justify-start items-center pt-4">
                 <button
                   onClick={() => {
                     table.previousPage();
@@ -306,7 +307,7 @@ function ClientsTable() {
                   />
                 </span>
                 <select
-                  className="dark:bg-gray-800"
+                  className="dark:bg-gray-800 p-1 rounded flex items-center"
                   value={table.getState().pagination.pageSize}
                   onChange={(e) => {
                     table.setPageSize(Number(e.target.value));

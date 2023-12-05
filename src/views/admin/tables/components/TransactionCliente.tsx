@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import CardMenu from "components/card/CardMenu";
+import LogoBack from "../../../../assets/svg/back-arrow.svg"
 import Card from "components/card";
+
 import {
     createColumnHelper,
     flexRender,
@@ -198,7 +200,7 @@ function TransactionClient() {
     }
     return (
         <Card extra={"w-full pb-10 p-4 h-full mt-6 "}>
-            <div className="pb-3">
+            <div className="pb-3 flex">
                 <label
                     htmlFor={"tets"}
                     className={`text-sm text-navy-700 dark:text-white ml-3 font-bold
@@ -229,34 +231,44 @@ function TransactionClient() {
                     >{cliente?.documento}
                     </label>
                 </label>
-
             </div>
-
-
-            <div className="mt-3 overflow-x-scroll xl:overflow-x-hidden">
-                <form className="flex gap-4 pb-3 flex-wrap" onSubmit={filterData}>
-                    <InputField id="filter-search" type="search" label="Nro comprobante" placeholder="Ingrese nro comprobante" variant="none" extra="basis-80 grow md:grow-0"
-                        onChange={(e) => {
-                            setNameFilter(e.target.value);
-                            setIsFormValid(Boolean(e.target.value) || Boolean(documentFilter))
-                        }}
-                    />
-                    <InputField id="filter-search" type="date" label="fecha movimiento" placeholder="Buscar" variant="none" extra="basis-80 grow md:grow-0"
-                        onChange={(e) => {
-                            setDocumentFilter(e.target.value);
-                        }}
-                    />
-                    <button
-                        type="submit"
-                        className={`text-white px-8 py-1 rounded-md h-14 self-end first-letter
-          bg-brand-500 w-full md:w-auto
+            <form className="flex gap-4 pb-3 flex-wrap justify-start" onSubmit={filterData}>
+                <InputField id="filter-search" type="search" label="Nro comprobante" placeholder="Ingrese nro comprobante" variant="none" extra="basis-80 grow md:grow-0"
+                    onChange={(e) => {
+                        setNameFilter(e.target.value);
+                        setIsFormValid(Boolean(e.target.value) || Boolean(documentFilter))
+                    }}
+                />
+                <InputField id="filter-search" type="date" label="fecha movimiento" placeholder="Buscar" variant="none" extra="basis-80 grow md:grow-0"
+                    onChange={(e) => {
+                        setDocumentFilter(e.target.value);
+                    }}
+                />
+                <button
+                    type="submit"
+                    className={`text-white px-8 py-1 rounded-md h-14 self-end first-letter bg-brand-500 w-full md:w-auto
           grow md:grow-0
               `}
-                    >
+                >
 
-                        Buscar
-                    </button>
-                </form>
+                    Buscar
+                </button>
+                <button
+                    className={`text-white px-8 py-1 rounded-md h-14 self-end first-letter w-full md:w-auto
+          grow md:grow-0 ml-auto
+              `}
+                    onClick={() => {
+                        navigate(-1)
+                    }}
+                >
+                    <img className="inline fill-white" src={LogoBack} alt="" />
+
+                </button>
+
+            </form>
+
+            <div className="mt-3 overflow-x-scroll xl:overflow-x-hidden">
+
                 {
                     isLoading ? <div className="text-start mb-6 mt-9 ml-80">
                         <div role="status">
@@ -328,8 +340,8 @@ function TransactionClient() {
 
                                 </tbody>
                             </table>
-
-                            <div className=" outline outline-1 outline-gray-200 flex gap-5 justify-start items-center pt-4">
+                            <hr />
+                            <div className=" flex flex-grow wrap gap-5 justify-start items-center pt-4 w-full">
                                 <button
                                     onClick={() => {
                                         table.previousPage();
@@ -376,7 +388,7 @@ function TransactionClient() {
                                     />
                                 </span>
                                 <select
-                                    className="dark:bg-gray-800"
+                                    className="dark:bg-gray-800 p-1 rounded flex items-center"
                                     value={table.getState().pagination.pageSize}
                                     onChange={(e) => {
                                         table.setPageSize(Number(e.target.value));
@@ -398,7 +410,7 @@ function TransactionClient() {
                 }
                 {
                     !isLoading && data.length <= 0 ?
-                        <p className="text-sm text-red-700 dark:text-white pl-3">
+                        <p className="text-sm text-red-700 dark:text-red-300 pl-3">
                             No se encontraron movimientos registrados
                         </p> : null
                 }
