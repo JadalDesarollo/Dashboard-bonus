@@ -228,7 +228,7 @@ function TransactionClient() {
                         htmlFor={"tets"}
                         className={`text-sm text-navy-700 dark:text-white ml-3 font-light
                     }`}
-                    >{cliente?.documento}
+                    >{cliente?.documento == "" ? 'No registrado' : cliente?.documento}
                     </label>
                 </label>
             </div>
@@ -284,64 +284,65 @@ function TransactionClient() {
                 {
                     !isLoading && data.length > 0 ?
                         <>
-
-                            <table className="w-full transition duration-10000 ease-in-out">
-                                <thead>
-                                    {table.getHeaderGroups().map((headerGroup) => (
-                                        <tr key={headerGroup.id} className="!border-px !border-gray-400">
-                                            {headerGroup.headers.map((header) => {
+                            <div className=" overflow-x-scroll xl:overflow-x-hidden">
+                                <table className="w-full transition duration-10000 ease-in-out">
+                                    <thead>
+                                        {table.getHeaderGroups().map((headerGroup) => (
+                                            <tr key={headerGroup.id} className="!border-px !border-gray-400">
+                                                {headerGroup.headers.map((header) => {
+                                                    return (
+                                                        <th
+                                                            key={header.id}
+                                                            colSpan={header.colSpan}
+                                                            onClick={header.column.getToggleSortingHandler()}
+                                                            className="cursor-pointer border-b-[1px] border-gray-200 pt-4 pb-2 pr-4 text-start"
+                                                        >
+                                                            <div className="items-center justify-center  text-xs text-gray-200">
+                                                                {flexRender(
+                                                                    header.column.columnDef.header,
+                                                                    header.getContext()
+                                                                )}
+                                                                {{
+                                                                    asc: "",
+                                                                    desc: "",
+                                                                }[header.column.getIsSorted() as string] ?? null}
+                                                            </div>
+                                                        </th>
+                                                    );
+                                                })}
+                                            </tr>
+                                        ))}
+                                    </thead>
+                                    <tbody>
+                                        {table
+                                            .getRowModel()
+                                            .rows.slice(0, pagination.pageSize)
+                                            .map((row) => {
                                                 return (
-                                                    <th
-                                                        key={header.id}
-                                                        colSpan={header.colSpan}
-                                                        onClick={header.column.getToggleSortingHandler()}
-                                                        className="cursor-pointer border-b-[1px] border-gray-200 pt-4 pb-2 pr-4 text-start"
-                                                    >
-                                                        <div className="items-center justify-center  text-xs text-gray-200">
-                                                            {flexRender(
-                                                                header.column.columnDef.header,
-                                                                header.getContext()
-                                                            )}
-                                                            {{
-                                                                asc: "",
-                                                                desc: "",
-                                                            }[header.column.getIsSorted() as string] ?? null}
-                                                        </div>
-                                                    </th>
+                                                    <tr key={row.id}>
+                                                        {row.getVisibleCells().map((cell) => {
+                                                            return (
+                                                                <td
+                                                                    key={cell.id}
+                                                                    className=" border-white/0 py-2 pr-4 "
+                                                                >
+                                                                    {flexRender(
+                                                                        cell.column.columnDef.cell,
+                                                                        cell.getContext()
+                                                                    )}
+                                                                </td>
+                                                            );
+                                                        })}
+                                                    </tr>
+
                                                 );
                                             })}
-                                        </tr>
-                                    ))}
-                                </thead>
-                                <tbody>
-                                    {table
-                                        .getRowModel()
-                                        .rows.slice(0, pagination.pageSize)
-                                        .map((row) => {
-                                            return (
-                                                <tr key={row.id}>
-                                                    {row.getVisibleCells().map((cell) => {
-                                                        return (
-                                                            <td
-                                                                key={cell.id}
-                                                                className=" border-white/0 py-2 pr-4 "
-                                                            >
-                                                                {flexRender(
-                                                                    cell.column.columnDef.cell,
-                                                                    cell.getContext()
-                                                                )}
-                                                            </td>
-                                                        );
-                                                    })}
-                                                </tr>
 
-                                            );
-                                        })}
-
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                             <hr />
-                            <div className=" flex flex-grow wrap gap-5 justify-start items-center pt-4 w-full">
+                            <div className="flex flex-wrap  gap-5 justify-center lg:justify-start items-center pt-4">
                                 <button
                                     onClick={() => {
                                         table.previousPage();
@@ -403,7 +404,7 @@ function TransactionClient() {
                                     ))}
                                 </select>
                                 <span>
-                                    Cantidad de transacciones: <strong>{data.length}</strong>
+                                    Cantidad de transacciones realizadas: <strong>{data.length}</strong>
                                 </span>
                             </div>
                         </> : null

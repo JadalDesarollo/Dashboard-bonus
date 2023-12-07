@@ -259,27 +259,30 @@ function ClientsTable() {
          
               </table>
               {/* Paginación */}
-              <hr />
-              <div className="  outline-gray-200 flex gap-5 justify-start items-center pt-4">
-                <button
-                  onClick={() => {
-                    table.previousPage();
-                  }}
-                  disabled={!table.getCanPreviousPage()}
-                  className="cursor-pointer"
-                >
-                  {"<"}
-                </button>{" "}
-                <button
-                  onClick={() => {
-                    table.nextPage();
-                  }}
-                  disabled={!table.getCanNextPage()}
-                  className="cursor-pointer"
-                >
-                  {">"}
-                </button>{" "}
-                {/*           <button
+              
+              
+            </div>
+            <hr />
+            <div className="flex flex-wrap  gap-5 justify-center lg:justify-start items-center pt-4">
+              <button
+                onClick={() => {
+                  table.previousPage();
+                }}
+                disabled={!table.getCanPreviousPage()}
+                className="cursor-pointer"
+              >
+                {"<"}
+              </button>{" "}
+              <button
+                onClick={() => {
+                  table.nextPage();
+                }}
+                disabled={!table.getCanNextPage()}
+                className="cursor-pointer"
+              >
+                {">"}
+              </button>{" "}
+              {/*           <button
             onClick={() => {
               table.setPageIndex(table.getPageCount() - 1); // Ir a la última página
             }}
@@ -287,45 +290,43 @@ function ClientsTable() {
           >
             {">>"}
           </button>{" "} */}
-                <span>
-                  Página{" "}
-                  <strong>
-                    {table.getState().pagination.pageIndex + 1} de{" "}
-                    {table.getPageCount()}
-                  </strong>{" "}
-                </span>
-                <span className="flex items-center gap-3">
-                  Ir a:
-                  <input
-                    type="number"
-                    value={Math.max(1, Math.min(table.getPageCount(), table.getState().pagination.pageIndex + 1))}
-                    onChange={(e) => {
-                      const page = e.target.value ? Math.max(1, Math.min(table.getPageCount(), Number(e.target.value))) - 1 : 0;
-                      table.setPageIndex(page);
-                    }}
-                    className=" p-1 rounded w-16 dark:bg-gray-800"
-                  />
-                </span>
-                <select
-                  className="dark:bg-gray-800 p-1 rounded flex items-center"
-                  value={table.getState().pagination.pageSize}
+              <span>
+                Página{" "}
+                <strong>
+                  {table.getState().pagination.pageIndex + 1} de{" "}
+                  {table.getPageCount()}
+                </strong>{" "}
+              </span>
+              <span className="flex items-center gap-3">
+                Ir a:
+                <input
+                  type="number"
+                  value={Math.max(1, Math.min(table.getPageCount(), table.getState().pagination.pageIndex + 1))}
                   onChange={(e) => {
-                    table.setPageSize(Number(e.target.value));
+                    const page = e.target.value ? Math.max(1, Math.min(table.getPageCount(), Number(e.target.value))) - 1 : 0;
+                    table.setPageIndex(page);
                   }}
-                >
-                  {[5, 10, 20].map((pageSize) => (
-                    <option
-                      className="appearance-none"
-                      key={pageSize} value={pageSize}>
-                      Mostrar {pageSize}
-                    </option>
-                  ))}
-                </select>
-
-                <span>
-                  Cantidad de clientes: <strong>{data.length}</strong>
-                </span>
-              </div>
+                  className=" p-1 rounded w-16 dark:bg-gray-800"
+                />
+              </span>
+              <select
+                className="dark:bg-gray-800 p-1 rounded flex items-center"
+                value={table.getState().pagination.pageSize}
+                onChange={(e) => {
+                  table.setPageSize(Number(e.target.value));
+                }}
+              >
+                {[5, 10, 20].map((pageSize) => (
+                  <option
+                    className="appearance-none"
+                    key={pageSize} value={pageSize}>
+                    Mostrar {pageSize}
+                  </option>
+                ))}
+              </select>
+              <span>
+                Cantidad de clientes: <strong>{data.length}</strong>
+              </span>
             </div>
 
           </> : null

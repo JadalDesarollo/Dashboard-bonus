@@ -32,7 +32,7 @@ interface Transaccion {
   fecha_transaccion: string;
   tipo: string;
 }
-function ClientsTable2() {
+function Reports() {
   const { fetchTransactions, generatePDF, descargarExcel } = useTransactionContext()
   const [isLoading, setisLoading] = useState<boolean>(false)
   const [showMessage, setShowMessage] = useState(false);
@@ -463,5 +463,5 @@ grow md:grow-0 ${!isExistData() ? 'bg-gray-500 dark:bg-gray-700 cursor-not-allow
   );
 }
 
-export default ClientsTable2;
+export default Reports;
 const columnHelper = createColumnHelper<Transaccion>();
