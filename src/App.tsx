@@ -32,7 +32,7 @@ const App = () => {
     return <div>Cargando...</div>;
   }
 
-  if (auth.logged) {
+  if (auth.logged  ) {
     return (
       <Routes>
         <Route path="admin/*" element={<AdminLayout />} />

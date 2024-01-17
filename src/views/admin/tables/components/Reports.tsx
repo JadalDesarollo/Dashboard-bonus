@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import CardMenu from "components/card/CardMenu";
 import Card from "components/card";
 import LogoExcel from "../../../../assets/svg/excel-logo.svg"
 import LogoPDF from "../../../../assets/svg/pdf-logo.svg"
-import iconExport from "../../../../assets/svg/exportar-logo.svg"
 import {
   createColumnHelper,
   flexRender,
@@ -14,11 +12,10 @@ import {
   PaginationState,
   getPaginationRowModel,
 } from "@tanstack/react-table";
+import Swal from 'sweetalert2'
 import InputField from "components/fields/InputField";
 import { useTransactionContext } from "context/TransactionContext";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { format, parseISO, set } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 interface Transaccion {
   id: number;
@@ -33,19 +30,19 @@ interface Transaccion {
   tipo: string;
 }
 function Reports() {
-  const { fetchTransactions, generatePDF, descargarExcel } = useTransactionContext()
+  const { fetchTransactions, generatePDF, generateExcel } = useTransactionContext()
   const [isLoading, setisLoading] = useState<boolean>(false)
   const [showMessage, setShowMessage] = useState(false);
   const [data, setData] = useState<Transaccion[]>([])
   const [isFormValid, setIsFormValid] = useState(true)
+
   const [searchParams, setSearchParams] = useState({
     fecha_transaccion_desde: "",
     fecha_transaccion_hasta: "",
     tipo: "",
-    codigo_comercio: "",
     pos_id: "",
   });
-  const getClients = async (dataFilter: any) => {
+  const getTransactions = async (dataFilter: any) => {
     setisLoading(true)
     const { data } = await fetchTransactions(dataFilter)
     setisLoading(false)
@@ -54,8 +51,6 @@ function Reports() {
   const isExistData = (): boolean => {
     return data.length > 0
   }
-
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const columns = [
     columnHelper.accessor("id", {
@@ -190,14 +185,72 @@ function Reports() {
     if (!isExistData()) {
       return
     }
-    await generatePDF(searchParams);
+    const { estado } = await generatePDF(searchParams);
+    if (estado) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: false,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+          const icon = toast.querySelector('.swal2-icon') as HTMLElement;
+          if (icon) {
+            icon.style.backgroundColor = '#303030';
+          }
+
+          toast.style.backgroundColor = '#444444'; // Reemplaza con el color de fondo que deseas
+          toast.style.color = '#eeebeb'; // Reemplaza con el color de texto que deseas
+        },
+        customClass: {
+          popup: "your-custom-class", // Agrega una clase CSS personalizada aquí
+        },
+      });
+
+      Toast.fire({
+        icon: "success",
+        title: "Reporte PDF generado",
+      });
+    }
   }
   const getGenerateExcel = async (e: any) => {
     if (!isExistData()) {
       return
     }
-    await descargarExcel(searchParams);
+    const { estado } = await generateExcel(searchParams);
+    if (estado) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: false,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+          const icon = toast.querySelector('.swal2-icon') as HTMLElement;
+          if (icon) {
+            icon.style.backgroundColor = '#303030';
+          }
+
+          toast.style.backgroundColor = '#444444'; // Reemplaza con el color de fondo que deseas
+          toast.style.color = '#eeebeb'; // Reemplaza con el color de texto que deseas
+        },
+        customClass: {
+          popup: "your-custom-class", // Agrega una clase CSS personalizada aquí
+        },
+      });
+
+      Toast.fire({
+        icon: "success",
+        title: "Reporte EXCEL generado",
+      });
+
+    }
   }
+  const today = new Date().toISOString().split('T')[0];
   const filterData = async (e: any) => {
     e.preventDefault();
     setShowMessage(true)
@@ -209,25 +262,30 @@ function Reports() {
     }
     setIsFormValid(true)
     const tipo = e.target.elements.tipo.value;
-    const codigo_comercio = e.target.elements.codigoComercio.value;
     const pos_id = e.target.elements.posId.value;
     setSearchParams({
       fecha_transaccion_desde,
       fecha_transaccion_hasta,
       tipo,
-      codigo_comercio,
       pos_id
     });
-    await getClients({
+    await getTransactions({
       fecha_transaccion_desde,
       fecha_transaccion_hasta,
       tipo,
-      codigo_comercio,
       pos_id
     });
-
   }
-
+  useEffect(() => {
+    // Establecer la fecha actual como valor predeterminado al montar el componente
+    setSearchParams((prevSearchParams) => ({
+      ...prevSearchParams,
+      fecha_transaccion_desde: today,
+      fecha_transaccion_hasta: today,
+    }));
+  }, []);
+  const [fechaDesde, setFechaDesde] = useState(today);
+  const [fechaHasta, setFechaHasta] = useState(today);
   return (
     <Card extra={"w-full pb-10 p-4 h-full mt-6 "}>
       <form className="flex  gap-4 flex-wrap" onSubmit={filterData}>
@@ -235,9 +293,16 @@ function Reports() {
           extra={`basis-80 grow md:grow-0`}
           name="fechaDesde"
           state={isFormValid}
+          value={fechaDesde}
+          onChange={(e) => setFechaDesde(e.target.value)}
+          max={fechaHasta}
         />
         <InputField id="filter-search" type="date" label="Fecha Hasta" placeholder="Buscar" variant="none" extra="basis-80 grow md:grow-0 "
           name="fechaHasta"
+          onChange={(e) => setFechaHasta(e.target.value)}
+          value={fechaHasta}
+          min={fechaDesde} // Restringe la fecha hasta la fecha desde
+     
 
         />
         <div className="basis-80 grow md:grow-0">
@@ -254,9 +319,6 @@ function Reports() {
           </select>
         </div>
 
-        <InputField id="filter-search" type="search" label="Código comercio" placeholder="Ingrese código comercio" variant="none" extra="basis-80 grow md:grow-0" name="codigoComercio"
-
-        />
         <InputField id="filter-search" type="search" label="Pos ID" placeholder="Ingrese pos ID" variant="none" extra="basis-80 grow md:grow-0" name="posId"
 
         />
@@ -462,6 +524,5 @@ grow md:grow-0 ${!isExistData() ? 'bg-gray-500 dark:bg-gray-700 cursor-not-allow
     </Card>
   );
 }
-
 export default Reports;
 const columnHelper = createColumnHelper<Transaccion>();

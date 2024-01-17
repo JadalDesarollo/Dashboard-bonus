@@ -28,3 +28,9 @@ input:checked.defaultCheckbox::before {
 	opacity: 1;
 }
 
+.your-custom-class {
+	background-color: #3498db;
+	/* Reemplaza con el color de fondo que deseas */
+	color: #ee0d0d;
+	/* Reemplaza con el color de texto que deseas */
+}

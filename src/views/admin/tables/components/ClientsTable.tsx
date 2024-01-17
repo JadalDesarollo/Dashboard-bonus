@@ -98,14 +98,14 @@ function ClientsTable() {
           <Link to={`/admin/clientes/${info.getValue()}`}>
             <button
               className="bg-brand-500 text-white px-7 py-1 rounded-md mr-2 w-13" >
-              ver
+              exitosas
             </button>
           </Link>
 
           <Link to={`/admin/clientes/pendientes/${info.getValue()}`}>
             <button
-              className="bg-red-400 text-white px-8 py-1 rounded-md mr-2 w-35 mt-2 lg:mt-0" >
-              ....
+              className="bg-red-400 text-white px-8 py-1 rounded-md mr-2 w-35 mt-2 lg:mt-0 " >
+              pendientes
             </button>
           </Link>
 
@@ -121,6 +121,7 @@ function ClientsTable() {
   });
   const [nameFilter, setNameFilter] = React.useState<string>("");
   const [documentFilter, setDocumentFilter] = React.useState<string>("");
+  const [loyaltyFilter, setLoyaltyFilter] = React.useState<string>("");
   const [isFormValid, setIsFormValid] = React.useState<boolean>(false);
   const table = useReactTable({
     data,
@@ -138,29 +139,35 @@ function ClientsTable() {
   });
   const filterData = async (e: any) => {
     e.preventDefault();
-    let filteredData = []
-    const { data } = await fetchClients()
-    if (nameFilter.trim() === "" && documentFilter.trim() === "") {
-      getClients()
-      return
+    let filteredData = [];
+    const { data } = await fetchClients();
+
+    if (nameFilter.trim() === "" && documentFilter.trim() === "" && loyaltyFilter.trim() === "") {
+      getClients();
+      return;
     }
-    //si se rellenan los 2 campos iguales buscar por los 2 
-    if (nameFilter.trim() != "" && documentFilter.trim() != "") {
+
+    if (nameFilter.trim() !== "" && documentFilter.trim() !== "") {
+      // Si ambos campos (nombres y documentos) están llenos, buscar por ambos
+      filteredData = data.filter((row: ClientsData) => {
+        const nameMatch = row.nombres?.toLocaleLowerCase().includes(nameFilter.toLocaleLowerCase());
+        const documentMatch = row.documento?.toLocaleLowerCase().includes(documentFilter.toLocaleLowerCase());
+        return nameMatch && documentMatch;
+      });
+    } else {
+      // Si al menos uno de los campos (nombres o documentos) está lleno, buscar por ese campo
       filteredData = data.filter((row: ClientsData) => {
         const nameMatch = nameFilter !== "" && row.nombres?.toLocaleLowerCase().includes(nameFilter.toLocaleLowerCase());
         const documentMatch = documentFilter !== "" && row.documento?.toLocaleLowerCase().includes(documentFilter.toLocaleLowerCase());
-        return nameMatch && documentMatch;
-      });
-      return setData(filteredData);
-    }
-    filteredData = data.filter((row: ClientsData) => {
-      const nameMatch = nameFilter !== "" && row.nombres?.toLocaleLowerCase().includes(nameFilter.toLocaleLowerCase());
-      const documentMatch = documentFilter !== "" && row.documento?.toLocaleLowerCase().includes(documentFilter.toLocaleLowerCase());
-      return nameMatch || documentMatch;
-    });
-    setData(filteredData);
+        const loyaltyMatch = loyaltyFilter !== "" && row.tarjeta_loyalty?.slice(-4) === loyaltyFilter; // Filtra por los últimos 4 dígitos
 
-  }
+        return nameMatch || documentMatch || loyaltyMatch;
+      });
+    }
+
+    setData(filteredData);
+  };
+
   return (
     <Card extra={"w-full pb-10 p-4 h-full mt-6"}>
       <form className="flex gap-4 flex-wrap" onSubmit={filterData}>
@@ -175,6 +182,19 @@ function ClientsTable() {
             setDocumentFilter(e.target.value);
           }}
         />
+
+        <InputField
+          id="filter-search-loyalty"
+          type="search"
+          label="Tarjeta de fidelidad"
+          placeholder="Ingrese los últimos 4 dígitos"
+          variant="none"
+          extra="basis-80 grow md:grow-0"
+          onChange={(e) => {
+            setLoyaltyFilter(e.target.value);
+          }}
+        />
+
         <button
           type="submit"
           className={`text-white px-8 py-1 rounded-md h-14 self-end first-letter
@@ -256,11 +276,11 @@ function ClientsTable() {
                     })}
 
                 </tbody>
-         
+
               </table>
               {/* Paginación */}
-              
-              
+
+
             </div>
             <hr />
             <div className="flex flex-wrap  gap-5 justify-center lg:justify-start items-center pt-4">

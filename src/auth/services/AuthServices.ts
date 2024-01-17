@@ -5,7 +5,6 @@ import {
   fetchConToken,
   fetchSinToken,
 } from "helpers/fetch";
-import { useCallback } from "react";
 
 export interface Login {
   status: boolean;
@@ -14,29 +13,29 @@ export interface Login {
 const dataUserEmpty: authStateUser = {
   id: null,
   logged: false,
-
   name: null,
   email: null,
   rol: null,
+  commerce_code: "",
 };
 const login = async (data: {
-  email: string;
+  username: string;
   password: string;
 }): Promise<Login> => {
   try {
     const resp = await fetchAuth("login", "POST", data);
+    console.log(resp);
     if (resp.success) {
-      localStorage.setItem("token", resp.data.token);
-      const { data: usuario } = resp;
+      localStorage.setItem("token", resp.token);
       return {
         status: true,
         userData: {
-          id: usuario.id,
+          id: 1,
           logged: true,
-  
-          name: usuario.name,
+          name: "usuario test",
           email: "email@test",
-          rol: usuario.rol[0],
+          rol: "bonus",
+          commerce_code: "",
         },
       };
     } else {
@@ -46,6 +45,7 @@ const login = async (data: {
       };
     }
   } catch (error) {
+    console.log(error);
     return {
       status: false,
       userData: dataUserEmpty,
@@ -61,20 +61,20 @@ const checkToken = async (): Promise<Login> => {
         userData: dataUserEmpty,
       };
     }
-    const resp = await fetchAuthRefresh("refresh/token", "POST");
+    const resp = await fetchAuthRefresh("POST");
 
     if (resp.success) {
-      localStorage.setItem("token", resp.data.token);
-      const { data: usuario } = resp;
+      localStorage.setItem("token", resp.token);
 
       return {
         status: true,
         userData: {
-          id: usuario.id,
+          id: 1,
           logged: true,
-          name: usuario.name,
+          name: "usuario test",
           email: "email@test",
-          rol: usuario.rol[0],
+          rol: "bonus",
+          commerce_code: "",
         },
       };
     } else {

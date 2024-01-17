@@ -2,12 +2,14 @@ import { format } from "date-fns";
 
 const generateAndDownloadPDF = async (dataFilter: any) => {
   try {
+    const token = localStorage.getItem("token") || "";
     const response = await fetch(
       `${process.env.REACT_APP_BASE_URL}/generar-pdf`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(dataFilter),
       }
@@ -54,6 +56,7 @@ const descargarPDF = async (response: Response) => {
 };
 const generateAndDownloadEXCEL = async (dataFilter: any) => {
   try {
+    const token = localStorage.getItem("token") || "";
     const fileName = `${format(
       new Date(),
       "dd_MM_yyyy"
@@ -64,6 +67,7 @@ const generateAndDownloadEXCEL = async (dataFilter: any) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(dataFilter),
       }
@@ -81,9 +85,14 @@ const generateAndDownloadEXCEL = async (dataFilter: any) => {
     a.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
+    return {
+      estado: true,
+    };
   } catch (error: any) {
     console.error("Error al descargar el archivo Excel:", error.message);
-    // Manejar errores
+    return {
+      estado: false,
+    };
   }
 };
 export default { generateAndDownloadPDF, generateAndDownloadEXCEL };

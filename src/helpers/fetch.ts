@@ -1,5 +1,5 @@
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const baseUrlAuth = process.env.REACT_APP_BASE_URL_AUTH;
+//const baseUrlAuth = process.env.REACT_APP_BASE_URL_AUTH;
 
 export const fetchAuth = async (
   endpoint: string,
@@ -7,7 +7,7 @@ export const fetchAuth = async (
   data?: any
 ) => {
   try {
-    const url = `${baseUrlAuth}/${endpoint}`;
+    const url = `${baseUrl}/auth/${endpoint}`;
     if (method === "GET") {
       const resp = await fetch(url);
       return await resp.json();
@@ -25,29 +25,18 @@ export const fetchAuth = async (
     return;
   }
 };
-export const fetchAuthRefresh = async (
-  endpoint: string,
-  method = "GET",
-  data?: any
-) => {
+export const fetchAuthRefresh = async (method = "GET") => {
   try {
-    const url = `${baseUrlAuth}/${endpoint}`;
-
+    const url = `${baseUrl}/auth/renewToken`;
     const token = localStorage.getItem("token") || "";
-    if (method === "GET") {
-      const resp = await fetch(url);
-      return await resp.json();
-    } else {
-      const resp = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      });
-
-      return await resp.json();
-    }
+    const resp = await fetch(url, {
+      method,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log(resp)
+    return await resp.json();
   } catch (error) {
     return;
   }
@@ -58,7 +47,7 @@ export const fetchSinToken = async (
   data?: any
 ) => {
   try {
-    const url = `${baseUrlAuth}/${endpoint}`;
+    const url = `${baseUrl}/${endpoint}`;
     if (method === "GET") {
       const resp = await fetch(url);
       return await resp.json();
@@ -88,7 +77,7 @@ export const fetchConToken = async (
     if (method === "GET") {
       const resp = await fetch(url, {
         headers: {
-          "x-token": token,
+          'Authorization': `Bearer ${token}`
         },
       });
       return await resp.json();
@@ -97,7 +86,7 @@ export const fetchConToken = async (
         method,
         headers: {
           "Content-type": "application/json",
-          "x-token": token,
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(data),
       });

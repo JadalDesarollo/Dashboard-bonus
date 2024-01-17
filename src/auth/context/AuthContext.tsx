@@ -1,14 +1,14 @@
-import { InitialTableState } from '@tanstack/react-table';
 import { Login, serviceAuth } from 'auth/services/AuthServices';
-import { fetchConToken } from 'helpers/fetch';
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useState } from 'react'
 
 export interface authStateUser {
     id: Number,
     logged: boolean,
     name: string,
     email: string,
-    rol: string
+    rol: string,
+    commerce_code: string
+
 }
 export interface AuthContext {
     auth: authStateUser,
@@ -21,29 +21,29 @@ const initialState: authStateUser = {
     logged: false,
     name: null,
     email: null,
-    rol: null
+    rol: null,
+    commerce_code: ''
+
 }
 const AuthContext = createContext<AuthContext | undefined>(undefined);
 export const AuthProvider: React.FC<{
     children?: React.ReactNode;
 }> = ({ children }: { children?: React.ReactNode }) => {
     const [auth, setAuth] = useState<authStateUser>(initialState)
-    const login = async (email: string, password: string) => {
+    const login = async (username: string, password: string) => {
         try {
-            const { status, userData } = await serviceAuth.login({ email, password })
+            const { status, userData } = await serviceAuth.login({ username, password })
+
             setAuth(userData)
             return status
         } catch (error) {
             return false
         }
     }
-
     const checkToken = async () => {
         const { status, userData } = await serviceAuth.checkToken()
         setAuth(userData)
-        console.log('no hay')
     }
-
     const logout = () => {
         localStorage.removeItem('token');
         setAuth({
@@ -51,7 +51,8 @@ export const AuthProvider: React.FC<{
             logged: false,
             name: null,
             email: null,
-            rol: null
+            rol: null,
+            commerce_code: null
         });
     }
     return (
