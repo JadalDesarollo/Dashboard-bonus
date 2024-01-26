@@ -33,7 +33,6 @@ export default function Admin(props: { [x: string]: any }) {
     }
     return activeRoute;
   };
-
   const getActiveNavbar = (routes: RoutesType[]): string | boolean => {
     let activeNavbar = false;
     for (let i = 0; i < routes.length; i++) {
@@ -76,9 +75,11 @@ export default function Admin(props: { [x: string]: any }) {
       return null;
     });
   };
-  const regex = /^http:\/\/localhost:3001\/admin\/clientes\/\d+$/;
-  const regexPendientes = /^http:\/\/localhost:3001\/admin\/clientes\/pendientes\/\d+$/;
+  const regex = /^\/admin\/clientes\/\d+$/;
+  const regexPendientes = /^\/admin\/clientes\/pendientes\/\d+$/;
 
+
+  const currentPath = window.location.pathname;
   document.documentElement.dir = "ltr";
   return (
     <div className="flex h-full w-full">
@@ -94,7 +95,9 @@ export default function Admin(props: { [x: string]: any }) {
             <Navbar
               onOpenSidenav={() => setOpen(true)}
               brandText={
-                regex.test(window.location.href) ? 'Transacciones' :regexPendientes.test(window.location.href)?'Transacciones Pendientes': currentRoute
+                regex.test(currentPath) ? 'Transacciones' :
+                regexPendientes.test(currentPath) ? 'Transacciones Pendientes' :
+                currentRoute
               }
               secondary={getActiveNavbar(routes)}
               {...rest}

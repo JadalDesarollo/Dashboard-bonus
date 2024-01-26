@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CardMenu from "components/card/CardMenu";
 import Card from "components/card";
-
 import {
   createColumnHelper,
   flexRender,
@@ -361,6 +360,5 @@ function ClientsTable() {
     </Card>
   );
 }
-
 export default ClientsTable;
 const columnHelper = createColumnHelper<ClientsData>();

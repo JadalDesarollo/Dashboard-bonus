@@ -28,6 +28,7 @@ interface Transaccion {
   pos_id: string;
   fecha_transaccion: string;
   tipo: string;
+  nombres:string;
 }
 function Reports() {
   const { fetchTransactions, generatePDF, generateExcel } = useTransactionContext()
@@ -64,6 +65,7 @@ function Reports() {
         </p>
       ),
     }),
+  
     columnHelper.accessor("numero_comprobante", {
       id: "progress",
       header: () => (
@@ -72,6 +74,17 @@ function Reports() {
         </p>
       ),
       cell: (info) => (
+        <p className="text-sm font-light text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor("nombres", {
+      id: "nombres",
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">Nombres</p>
+      ),
+      cell: (info: any) => (
         <p className="text-sm font-light text-navy-700 dark:text-white">
           {info.getValue()}
         </p>
