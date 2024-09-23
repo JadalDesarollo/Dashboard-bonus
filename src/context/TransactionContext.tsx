@@ -29,7 +29,11 @@ interface BonusContextType {
     transactionData: Transaction[] | null;
     isLoading: boolean;
     fetchClients: () => Promise<FunctionResponse>;
-    fetchTransactionsByClient: (idClient: number) => Promise<FunctionResponse>;
+    fetchTransactionsByClient: (idClient: number, paramsSearch: {
+        fecha_transaccion_desde: string,
+        fecha_transaccion_hasta: string,
+        tipo: string
+    }) => Promise<FunctionResponse>;
     fetchTransactionsPending: (idClient: number) => Promise<FunctionResponse>;
     fetchTransactions: (dataFilter: any) => Promise<FunctionResponse>;
     generatePDF: (dataFilter: any) => Promise<FunctionResponse>;
@@ -68,6 +72,8 @@ export const TransactionProvider: React.FC<{
             }
         }
     };
+
+    
     const fetchTransactions = async (dataFilter: any) => {
         try {
             const data = await fetchConToken(
@@ -90,12 +96,23 @@ export const TransactionProvider: React.FC<{
             }
         };
     }
-    const fetchTransactionsByClient = async (idClient: number): Promise<FunctionResponse> => {
+    const fetchTransactionsByClient = async (idClient: number, paramsSearch: {
+        fecha_transaccion_desde: string,
+        fecha_transaccion_hasta: string,
+        tipo: string
+    }): Promise<FunctionResponse> => {
         try {
+        
             const data = await fetchConToken(
-                `listAccumulate/${idClient}`
+                `listAccumulate/${idClient}`,
+                'POST',
+                paramsSearch
             );
-
+            if (!data.estado) {
+                return {
+                    estado: false
+                }
+            }
             return {
                 estado: true,
                 data: data.data,
@@ -123,7 +140,6 @@ export const TransactionProvider: React.FC<{
             }
         }
     }
-
     const fetchTransactionsPending = async (idClient: number): Promise<FunctionResponse> => {
         try {
             const data = await fetchConToken(

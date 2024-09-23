@@ -1,5 +1,4 @@
 const baseUrl = process.env.REACT_APP_BASE_URL;
-//const baseUrlAuth = process.env.REACT_APP_BASE_URL_AUTH;
 
 export const fetchAuth = async (
   endpoint: string,

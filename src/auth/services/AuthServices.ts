@@ -32,7 +32,7 @@ const login = async (data: {
         userData: {
           id: 1,
           logged: true,
-          name: "usuario test",
+          name: "ADMIN",
           email: "email@test",
           rol: "bonus",
           commerce_code: "",
@@ -71,7 +71,7 @@ const checkToken = async (): Promise<Login> => {
         userData: {
           id: 1,
           logged: true,
-          name: "usuario test",
+          name: "ADMIN",
           email: "email@test",
           rol: "bonus",
           commerce_code: "",
