@@ -16,8 +16,8 @@ import InputField from "components/fields/InputField";
 import { useTransactionContext } from "context/TransactionContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { format, parseISO } from "date-fns";
-import { is } from "date-fns/locale";
+import { addHours, format, parseISO } from "date-fns";
+import { es, is } from "date-fns/locale";
 
 export interface TransactionPending {
     id: number;
@@ -110,11 +110,16 @@ function TransactionPending() {
             header: () => (
                 <p className="text-sm font-bold text-gray-600 dark:text-white">FECHA TRANSACCION</p>
             ),
-            cell: (info) => (
-                <p className="text-sm font-light text-navy-700 dark:text-white">
-                    {format(parseISO(info.getValue()), 'dd MMM yyyy HH:mm:ss')}
-                </p>
-            ),
+            cell: (info) => {
+                const raw = String(info.getValue());
+                const d = parseISO(raw);
+                const adj = addHours(d, 5);
+                return (
+                    <p className="text-sm font-light text-navy-700 dark:text-white">
+                        {format(adj, 'dd MMM yyyy HH:mm:ss', { locale: es })}
+                    </p>
+                );
+            }
         }),
 
 

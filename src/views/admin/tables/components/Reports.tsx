@@ -15,7 +15,8 @@ import {
 import Swal from 'sweetalert2'
 import InputField from "components/fields/InputField";
 import { useTransactionContext } from "context/TransactionContext";
-import { format, parseISO } from "date-fns";
+import { addHours, format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface Transaccion {
   id: number;
@@ -28,7 +29,7 @@ interface Transaccion {
   pos_id: string;
   fecha_transaccion: string;
   tipo: string;
-  nombres:string;
+  nombres: string;
 }
 function Reports() {
   const { fetchTransactions, generatePDF, generateExcel } = useTransactionContext()
@@ -65,7 +66,7 @@ function Reports() {
         </p>
       ),
     }),
-  
+
     columnHelper.accessor("numero_comprobante", {
       id: "progress",
       header: () => (
@@ -164,11 +165,17 @@ function Reports() {
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">fecha transaccion</p>
       ),
-      cell: (info) => (
-        <p className="text-sm font-light text-navy-700 dark:text-white">
-          {format(parseISO(info.getValue()), 'dd MMM yyyy HH:mm:ss')}
-        </p>
-      ),
+      cell: (info) => {
+        const raw = String(info.getValue());
+        const d = parseISO(raw);
+        const adj = addHours(d, 5);
+        return (
+          <p className="text-sm font-light text-navy-700 dark:text-white">
+            {format(adj, 'dd MMM yyyy HH:mm:ss', { locale: es })}
+          </p>
+        );
+      }
+      ,
     }),
 
 
@@ -315,7 +322,7 @@ function Reports() {
           onChange={(e) => setFechaHasta(e.target.value)}
           value={fechaHasta}
           min={fechaDesde} // Restringe la fecha hasta la fecha desde
-     
+
 
         />
         <div className="basis-80 grow md:grow-0">
